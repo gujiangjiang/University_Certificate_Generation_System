@@ -52,13 +52,25 @@ p, div, span, label, h1, h2, h3 {
     flex-direction: column;
 }
 
+/* --- (*** 已修改 ***) --- */
+/* 为了实现无缝缩放，这里修改了预览区域的样式 */
+/* 使用 flex 布局，并让内容居中对齐 */
 .preview-area {
     flex: 1;
     display: flex;
-    flex-direction: column;
-    gap: 30px;
-    align-items: center;
+    justify-content: center; /* 水平居中 */
+    align-items: center;     /* 垂直居中 */
+    min-height: 500px;       /* 保证一个最小高度 */
+    overflow: hidden;        /* 隐藏任何可能超出的部分，避免出现滚动条 */
 }
+
+/* --- (*** 新增 ***) --- */
+/* 对预览容器内的实际证件（直接子元素）进行样式设置 */
+#preview-container > * {
+    transform-origin: top center; /* 设置缩放的原点为顶部中心，这样缩放时视觉效果更好 */
+    transition: transform 0.2s ease-out; /* 添加一个平滑的过渡效果 */
+}
+
 
 .placeholder-text {
     font-size: 1.5rem;
@@ -242,6 +254,11 @@ button {
     }
     .preview-area {
         width: 100%;
+        /* --- (*** 新增 ***) --- */
+        /* 打印时重置预览区的对齐和溢出属性 */
+        justify-content: flex-start;
+        align-items: flex-start;
+        overflow: visible;
     }
     #preview-container > * {
         width: 100% !important;
@@ -249,6 +266,9 @@ button {
         box-shadow: none !important;
         margin: 0 !important;
         border-radius: 0 !important;
+        /* --- (*** 新增 ***) --- */
+        /* 打印时取消所有 transform 变换 */
+        transform: none !important;
     }
 }
 

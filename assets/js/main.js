@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDocument: null,
         config: null,
         // (*** 新增 ***) "管家"对象：用于缓存需要跨页面保留状态的动态输入框
-        dynamicInputs: {}, 
+        dynamicInputs: {},
     };
 
     const selectors = {
@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         documentSelector: document.getElementById('document-selector'),
         docFormContainer: document.getElementById('document-form-container'),
         previewContainer: document.getElementById('preview-container'),
+        // --- (*** 新增 ***) ---
+        // 获取预览区域的 DOM 元素，用于计算缩放比例
+        previewArea: document.querySelector('.preview-area'),
         printBtn: document.getElementById('print-btn'),
         previewBtn: document.getElementById('preview-btn'),
     };
@@ -36,6 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             bindFormEvents();
             setupCustomFileUploads(document.body);
+
+            // --- (*** 新增 ***) ---
+            // 添加窗口大小变化的监听器，当用户调整浏览器窗口时，重新计算缩放
+            window.addEventListener('resize', updatePreviewScaling);
 
         } catch (error) {
             console.error('初始化失败:', error);
@@ -155,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state.currentTemplate) return;
         updateCalculatedFields();
         updatePreview();
+        // --- (*** 新增 ***) ---
+        // 每次更新内容后，都调用缩放函数，以确保预览大小正确
+        updatePreviewScaling();
     }
 
     // 5. 更新常规预览
@@ -240,12 +250,64 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast({ message: '预览已更新', type: 'success', duration: 2500 });
     });
     selectors.printBtn.addEventListener('click', () => {
+        // --- (*** 已修改 ***) ---
+        // 打印前，暂时移除缩放，确保打印的是原始大小
+        const previewEl = selectors.previewContainer.firstElementChild;
+        if (previewEl) {
+            previewEl.style.transform = 'none';
+        }
+
         updateAll();
         showToast({ message: '正在准备打印...', type: 'info', duration: 2500 });
-        setTimeout(() => window.print(), 100);
+        
+        setTimeout(() => {
+            window.print();
+            // 打印后，恢复缩放
+            updatePreviewScaling();
+        }, 100);
     });
 
     // 8. 辅助函数
+
+    // --- (*** 新增 ***) ---
+    // 核心功能：更新预览区的缩放比例
+    function updatePreviewScaling() {
+        const previewEl = selectors.previewContainer.firstElementChild; // 获取实际的证件元素
+        const area = selectors.previewArea;
+
+        // 如果预览区或者证件元素不存在，则不执行
+        if (!previewEl || !area) return;
+
+        // 移除 placeholder-text，因为它会影响尺寸计算
+        if (previewEl.classList.contains('placeholder-text')) {
+             previewEl.style.transform = 'none'; // 如果是占位符，则不缩放
+             return;
+        }
+
+        // 先重置 transform，以获取元素的原始（无缩放）尺寸
+        previewEl.style.transform = 'none';
+
+        const areaWidth = area.clientWidth;
+        const areaHeight = area.clientHeight;
+
+        const elWidth = previewEl.offsetWidth;
+        const elHeight = previewEl.offsetHeight;
+
+        // 如果元素没有尺寸，则不进行计算
+        if (elWidth === 0 || elHeight === 0) return;
+
+        // 计算宽度和高度方向上的缩放比例
+        const scaleX = areaWidth / elWidth;
+        const scaleY = areaHeight / elHeight;
+
+        // 取两个比例中较小的一个，作为最终的缩放比例，以保证整个元素都能被看见
+        // 同时减去一个很小的值 (0.05) 作为边距，避免元素紧贴边缘
+        const scale = Math.min(scaleX, scaleY) - 0.05;
+
+        // 应用计算出的缩放比例
+        previewEl.style.transform = `scale(${scale > 0 ? scale : 1})`;
+    }
+
     function resetUI(isTemplateLoading = false) {
         state.currentDocument = null;
         selectors.documentSelector.innerHTML = '';
@@ -269,6 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             removeTemplateCSS();
         }
+        // --- (*** 新增 ***) ---
+        // 重置UI时，也要确保预览缩放被重置
+        updatePreviewScaling();
     }
     function populateForm(container, data) {
         if (!data) return;
