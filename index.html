@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学证件综合生成系统</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="control-panel">
+            <header class="app-header">
+                <h1>🎓 大学证件综合生成系统</h1>
+            </header>
+            
+            <div class="form-section">
+                <label for="template-selector">选择证件模板</label>
+                <select id="template-selector">
+                    <option value="">请选择一个模板...</option>
+                </select>
+            </div>
+
+            <div class="form-separator"></div>
+
+            <div id="common-info-section" class="form-section hidden">
+                <h2 class="form-section-title">通用大学信息</h2>
+                <div class="form-group">
+                    <label for="universityName">大学名称 (本地语言)</label>
+                    <input type="text" id="universityName" data-bind-to="universityName">
+                </div>
+                <div class="form-group">
+                    <label for="universityNameEn">University Name (EN)</label>
+                    <input type="text" id="universityNameEn" data-bind-to="universityNameEn">
+                </div>
+                <div class="form-group">
+                    <label for="universityLogo">大学校徽</label>
+                    <input type="file" id="universityLogo" accept="image/*" data-bind-to="logo">
+                </div>
+            </div>
+
+            <div class="form-separator"></div>
+            
+            <div id="document-selector" class="document-selector"></div>
+            
+            <div id="document-form-container"></div>
+
+            <div id="action-buttons" class="button-group hidden">
+                <button class="btn-primary" id="preview-btn">更新预览</button>
+                <button class="btn-success" id="print-btn">打印</button>
+            </div>
+        </div>
+        
+        <div class="preview-area">
+            <div id="preview-container">
+                <div class="placeholder-text">请先选择一个模板和证件类型</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

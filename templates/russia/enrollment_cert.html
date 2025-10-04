@@ -1,0 +1,97 @@
+<div id="form-snippet">
+    <h2 class="form-section-title">在读证明信息</h2>
+    <div class="form-group">
+        <label for="certificateNumber">证明编号</label>
+        <input type="text" id="certificateNumber" data-bind-to="certificateNumber" value="С-2024-001234">
+    </div>
+    <div class="form-group">
+        <label for="certificateDate">签发日期</label>
+        <input type="date" id="certificateDate" data-bind-to="certificateDate" value="2024-01-15">
+    </div>
+    <div class="form-group">
+        <label for="studentName">学生姓名</label>
+        <input type="text" id="studentName" data-bind-to="studentName" value="Иванов Иван Иванович">
+    </div>
+    <div class="form-group">
+        <label for="studentId">学号</label>
+        <input type="text" id="studentId" data-bind-to="studentId" value="2024091234">
+    </div>
+    <div class="form-group">
+        <label for="passportNumber">护照号</label>
+        <input type="text" id="passportNumber" data-bind-to="passportNumber" value="A1234567">
+    </div>
+    <div class="form-group">
+        <label for="faculty">院系</label>
+        <input type="text" id="faculty" data-bind-to="faculty" value="Факультет информационных технологий">
+    </div>
+    <div class="form-group">
+        <label for="specialty">专业</label>
+        <input type="text" id="specialty" data-bind-to="specialty" value="Компьютерные науки">
+    </div>
+    <div class="form-group">
+        <label for="enrollYear">入学年份</label>
+        <input type="text" id="enrollYear" data-bind-to="enrollYear" value="2024">
+    </div>
+    <div class="form-group">
+        <label for="course">当前课程/年级</label>
+        <input type="text" id="course" data-bind-to="course" value="1">
+    </div>
+    <div class="form-group">
+        <label for="rectorName">校长姓名</label>
+        <input type="text" id="rectorName" data-bind-to="rectorName" value="Сидоров Сидор Сидорович">
+    </div>
+</div>
+
+<div id="preview-snippet">
+    <div class="certificate enrollment-certificate">
+        <div class="certificate-border"></div>
+        <div class="certificate-header">
+            <div class="university-logo-placeholder">
+                <img data-preview-id="logo" src="" alt="Logo" style="display: none; width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                <div class="placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">ПУ<br>ЛОГО</div>
+            </div>
+            <div class="university-name-display" data-preview-id="universityName">ПАМИР УНИВЕРСИТЕТ</div>
+            <div class="university-name-en-display" data-preview-id="universityNameEn">PAMIR UNIVERSITY</div>
+        </div>
+        <div class="certificate-number" data-preview-id="certificateNumber">С-2024-001234</div>
+        <div class="document-title">СПРАВКА ОБ ОБУЧЕНИИ</div>
+        <div class="certificate-body">
+            <p style="text-align: center; font-weight: bold; font-size: 18px;">
+                Настоящая справка выдана <span class="highlight" data-preview-id="studentName">Иванову Ивану Ивановичу</span>, 
+                студенту Памир Университета
+            </p>
+            <p>
+                Настоящим подтверждаем, что гражданин <span class="highlight" data-preview-id="studentName">Иванов Иван Иванович</span>, 
+                паспорт № <span class="highlight" data-preview-id="passportNumber">A1234567</span>, 
+                является студентом <span class="highlight" data-preview-id="universityName">Памир Университета</span> 
+                с <span class="highlight" data-preview-id="enrollYear">2024</span> года.
+            </p>
+            <p>
+                Обучается на <span class="highlight" data-preview-id="course">1</span> курсе 
+                <span class="highlight" data-preview-id="faculty">Факультета информационных технологий</span> 
+                по специальности "<span class="highlight" data-preview-id="specialty">Компьютерные науки</span>".
+            </p>
+            <p>
+                Номер студенческого билета: <span class="highlight" data-preview-id="studentId">2024091234</span>
+            </p>
+            <p>
+                Справка выдана для предоставления по месту требования.
+            </p>
+        </div>
+        <div class="seal-section">
+            <div class="official-seal">ПЕЧАТЬ УНИВЕРСИТЕТА</div>
+            <div class="signature-section">
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Ректор университета</div>
+                    <div data-preview-id="rectorName">Сидоров Сидор Сидорович</div>
+                </div>
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Дата выдачи</div>
+                    <div data-preview-id="certificateDate">2024-01-15</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

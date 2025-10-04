@@ -1,0 +1,19 @@
+{
+    "name": "俄罗斯帕米尔大学",
+    "universityName": "Памир Университети",
+    "universityNameEn": "PAMIR UNIVERSITY",
+    "documents": {
+      "admission_letter": {
+        "name": "录取通知书",
+        "available": true
+      },
+      "enrollment_cert": {
+        "name": "在读证明",
+        "available": true
+      },
+      "student_card": {
+        "name": "学生证",
+        "available": true
+      }
+    }
+}

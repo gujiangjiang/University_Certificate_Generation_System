@@ -1,0 +1,418 @@
+/*
+ * 仅适用于俄罗斯模板的样式
+ */
+
+/* 通用证书样式 */
+.certificate {
+    width: 210mm;
+    min-height: 297mm;
+    background-color: white;
+    padding: 40mm 30mm;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    position: relative;
+    font-family: 'Times New Roman', serif;
+}
+
+.certificate-border {
+    position: absolute;
+    top: 20mm;
+    left: 20mm;
+    right: 20mm;
+    bottom: 20mm;
+    border: 3px double #2c5aa0;
+    pointer-events: none;
+}
+
+/* --- 录取通知书 & 在读证明 样式复刻 --- */
+
+/* 通用头部样式 */
+.letter-header, .certificate-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.university-logo-placeholder {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background-color: #2c5aa0; /* 修正logo背景色 */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    position: relative;
+}
+.university-name-display {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1a365d;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.university-name-en-display {
+    font-size: 18px;
+    color: #495057;
+    margin-bottom: 20px;
+}
+.document-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c5aa0;
+    margin: 30px 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+.student-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    margin: 30px 0;
+    border-left: 5px solid #2c5aa0;
+}
+.info-row {
+    display: flex;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.info-label {
+    font-weight: bold;
+    width: 200px;
+    color: #495057;
+}
+.info-value {
+    flex: 1;
+    color: #212529;
+}
+.signature-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 80px;
+}
+.signature-block {
+    text-align: center;
+    width: 200px;
+}
+.signature-line {
+    border-bottom: 2px solid #333;
+    margin-bottom: 10px;
+    height: 40px;
+}
+.signature-title {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 录取通知书专属样式 */
+.admission-letter .letter-body {
+    margin: 40px 0;
+    text-align: justify;
+    line-height: 1.8; /* 复刻行高 */
+    font-size: 16px;
+    color: #333;
+}
+.admission-letter .letter-body p {
+    margin-bottom: 20px;
+    text-indent: 2em; /* 复刻段首缩进 */
+}
+
+/* 在读证明专属样式 */
+.enrollment-certificate .certificate-header {
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #e9ecef; /* 复刻头部底边框 */
+}
+.enrollment-certificate .certificate-number {
+    text-align: right;
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+.enrollment-certificate .certificate-body {
+    margin: 40px 0;
+    font-size: 16px;
+    line-height: 2.2; /* 复刻超大行高 */
+    color: #333;
+    text-align: justify;
+}
+.enrollment-certificate .certificate-body p {
+    margin-bottom: 20px; /* 增加段落间距 */
+}
+.highlight {
+    font-weight: bold;
+    color: #2c5aa0;
+    font-size: 18px;
+    padding: 0 5px;
+}
+.seal-section {
+    position: relative;
+    margin-top: 100px;
+}
+.official-seal {
+    position: absolute;
+    right: 100px;
+    top: -50px;
+    width: 150px;
+    height: 150px;
+    border: 5px solid #dc3545;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #dc3545;
+    font-weight: bold;
+    transform: rotate(-15deg);
+    opacity: 0.7;
+    text-align: center;
+    padding: 20px;
+    line-height: 1.2;
+}
+
+
+/* --- 学生证样式 (最终精确修正版本) --- */
+.student-card {
+    width: 500px;
+    height: 320px;
+    background-color: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    line-height: initial;
+}
+.card-front .header {
+    background-color: #3b82f6;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 90px;
+}
+.student-card .university-name-display {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: white;
+    letter-spacing: normal;
+    text-transform: none;
+    margin-bottom: 2px;
+}
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+.logo-container img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+.logo-container .placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #4a5568;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logo-container .placeholder-svg {
+    width: 50px;
+    height: 50px;
+}
+.header-text {
+    flex: 1;
+}
+.card-subtitle {
+    font-size: 12px;
+    opacity: 0.95;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+.card-body {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    background-color: #fafafa;
+}
+.photo-container {
+    width: 100px;
+    height: 130px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    position: relative;
+}
+.photo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.photo-container .placeholder {
+    color: #999;
+    font-size: 11px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.5;
+}
+.info-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.info-group {
+    margin-bottom: 8px;
+}
+.student-card .info-label {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    font-weight: normal; 
+    line-height: 1.1;
+}
+.student-card .info-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    word-break: break-word;
+    line-height: 1.1;
+}
+.card-footer {
+    padding: 12px 20px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e0e0e0;
+    height: 60px;
+}
+.date-group {
+    text-align: center;
+    line-height: 1.2;
+}
+.date-label {
+    font-size: 9px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+.date-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+.card-back .black-bar {
+    height: 50px;
+    background-color: #000;
+    width: 100%;
+}
+.card-back .content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.address-section {
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+.section-title {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+.address-text {
+    font-size: 14px;
+    color: #333;
+}
+.notice-text {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.5;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    flex: 1;
+}
+.back-signature-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+}
+.signature-area {
+    flex: 1;
+    line-height: 1.2;
+}
+.signature-text {
+    font-size: 20px;
+    font-family: 'Brush Script MT', cursive;
+    color: #333;
+    margin-bottom: 3px;
+    line-height: 1.1; /* 核心修复：为签名设置与正面一致的行高 */
+}
+.signature-label {
+    font-size: 10px;
+    color: #999;
+}
+.back-logo {
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+.back-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.back-logo .placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #4a5568;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    width: 500px;
+}

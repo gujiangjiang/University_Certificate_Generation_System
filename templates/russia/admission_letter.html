@@ -1,0 +1,109 @@
+<div id="form-snippet">
+    <h2 class="form-section-title">录取通知书信息</h2>
+    <div class="form-group">
+        <label for="letterNumber">信件编号</label>
+        <input type="text" id="letterNumber" data-bind-to="letterNumber" value="№ 2024/09/1234">
+    </div>
+    <div class="form-group">
+        <label for="admissionDate">发信日期</label>
+        <input type="date" id="admissionDate" data-bind-to="admissionDate" value="2024-07-15">
+    </div>
+    <div class="form-group">
+        <label for="studentName">学生姓名</label>
+        <input type="text" id="studentName" data-bind-to="studentName" value="Иванов Иван Иванович">
+    </div>
+    <div class="form-group">
+        <label for="passportNumber">护照号</label>
+        <input type="text" id="passportNumber" data-bind-to="passportNumber" value="A1234567">
+    </div>
+    <div class="form-group">
+        <label for="studentId">学号</label>
+        <input type="text" id="studentId" data-bind-to="studentId" value="2024091234">
+    </div>
+    <div class="form-group">
+        <label for="faculty">院系</label>
+        <input type="text" id="faculty" data-bind-to="faculty" value="Факультет информационных технологий">
+    </div>
+    <div class="form-group">
+        <label for="specialty">专业</label>
+        <input type="text" id="specialty" data-bind-to="specialty" value="Компьютерные науки">
+    </div>
+    <div class="form-group">
+        <label for="educationLevel">教育层次</label>
+        <select id="educationLevel" data-bind-to="educationLevel">
+            <option value="бакалавриат">бакалавриат</option>
+            <option value="магистратура">магистратура</option>
+            <option value="докторантура">докторантура</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="studyPeriod">学习年限 (年)</label>
+        <input type="text" id="studyPeriod" data-bind-to="studyPeriod" value="4">
+    </div>
+    <div class="form-group">
+        <label for="academicYear">学年</label>
+        <input type="text" id="academicYear" data-bind-to="academicYear" value="2024-2025">
+    </div>
+    <div class="form-group">
+        <label for="deanName">院长姓名</label>
+        <input type="text" id="deanName" data-bind-to="deanName" value="Петров Петр Петрович">
+    </div>
+</div>
+
+<div id="preview-snippet">
+    <div class="certificate admission-letter">
+        <div class="certificate-border"></div>
+        <div class="letter-header">
+            <div class="university-logo-placeholder">
+                <img data-preview-id="logo" src="" alt="Logo" style="display: none; width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                <div class="placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">ПУ<br>ЛОГО</div>
+            </div>
+            <div class="university-name-display" data-preview-id="universityName">ПАМИР УНИВЕРСИТЕТ</div>
+            <div class="university-name-en-display" data-preview-id="universityNameEn">PAMIR UNIVERSITY</div>
+        </div>
+        <div class="document-title">ПИСЬМО О ЗАЧИСЛЕНИИ</div>
+        <div class="letter-body">
+            <span data-preview-id="letterNumber">№ 2024/09/1234</span> от 
+            <span data-preview-id="admissionDate">2024-07-15</span>
+            
+            <div class="student-info">
+                <div class="info-row"><div class="info-label">ФИО студента:</div><div class="info-value" data-preview-id="studentName">Иванов Иван Иванович</div></div>
+                <div class="info-row"><div class="info-label">Номер паспорта:</div><div class="info-value" data-preview-id="passportNumber">A1234567</div></div>
+                <div class="info-row"><div class="info-label">Номер студента:</div><div class="info-value" data-preview-id="studentId">2024091234</div></div>
+                <div class="info-row"><div class="info-label">Факультет:</div><div class="info-value" data-preview-id="faculty">Факультет информационных технологий</div></div>
+                <div class="info-row"><div class="info-label">Специальность:</div><div class="info-value" data-preview-id="specialty">Компьютерные науки</div></div>
+                <div class="info-row"><div class="info-label">Уровень образования:</div><div class="info-value" data-preview-id="educationLevel">бакалавриат</div></div>
+                <div class="info-row"><div class="info-label">Срок обучения:</div><div class="info-value" data-preview-id="studyPeriod" data-suffix=" года">4 года</div></div>
+                <div class="info-row"><div class="info-label">Учебный год:</div><div class="info-value" data-preview-id="academicYear">2024-2025</div></div>
+            </div>
+            <p>
+                Уведомляем Вас, что Вы успешно зачислены в Памир Университет 
+                в <span data-preview-id="educationLevel">бакалавриат</span> на специальность 
+                "<span data-preview-id="specialty">Компьютерные науки</span>" 
+                на <span data-preview-id="studyPeriod">4</span>-летний срок обучения.
+            </p>
+            <p>
+                Начало занятий: 1 сентября <span data-preview-id="academicYear">2024</span> года.
+                Просим прибыть в университет в установленные сроки с необходимыми документами.
+            </p>
+            <p>
+                Поздравляем с началом учебы в нашем университете и желаем Вам 
+                успехов в получении знаний!
+            </p>
+        </div>
+        <div class="letter-footer">
+            <div class="signature-section">
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Декан факультета</div>
+                    <div data-preview-id="deanName">Петров Петр Петрович</div>
+                </div>
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Дата</div>
+                    <div data-preview-id="admissionDate">2024-07-15</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
