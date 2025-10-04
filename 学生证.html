@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生证生成系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-panel {
+            flex: 0 0 350px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            height: fit-content;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .student-card {
+            width: 500px;
+            height: 320px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* 正面样式 */
+        .card-front {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .card-front .header {
+            background: #3b82f6;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 90px;
+        }
+        
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .logo-container img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        
+        .header-text {
+            flex: 1;
+        }
+        
+        .university-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+        
+        .card-subtitle {
+            font-size: 12px;
+            opacity: 0.95;
+            line-height: 1.3;
+            text-transform: uppercase;
+        }
+        
+        .card-body {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            background: #fafafa;
+        }
+        
+        .photo-container {
+            width: 100px;
+            height: 130px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ddd;
+        }
+        
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-placeholder {
+            color: #999;
+            font-size: 11px;
+            text-align: center;
+        }
+        
+        .info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 5px 0;
+        }
+        
+        .info-group {
+            margin-bottom: 8px;
+        }
+        
+        .info-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            word-break: break-word;
+        }
+        
+        .card-footer {
+            padding: 12px 20px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            height: 60px;
+			margin-bottom: 20px;
+        }
+        
+        .date-group {
+            text-align: center;
+        }
+        
+        .date-label {
+            font-size: 9px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        
+        .date-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* 背面样式 */
+        .card-back {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .card-back .black-bar {
+            height: 50px;
+            background: #000;
+            width: 100%;
+        }
+        
+        .card-back .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .address-section {
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        
+        .address-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .notice-text {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+            margin: 15px 0;
+            flex: 1;
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+        }
+        
+        .signature-area {
+            flex: 1;
+        }
+        
+        .signature-text {
+            font-size: 20px;
+            font-family: 'Brush Script MT', cursive;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .signature-label {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .back-logo {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .back-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* 控制面板样式 */
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 50px;
+            font-family: inherit;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 6px;
+            border: 2px dashed #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #fafafa;
+            font-size: 12px;
+        }
+        
+        input[type="file"]:hover {
+            border-color: #3b82f6;
+            background: #f0f7ff;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding-top: 10px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            width: 500px;
+        }
+        
+        /* 分隔线 */
+        .form-separator {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 20px -25px;
+        }
+        
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            margin-top: 20px;
+        }
+        
+        @media print {
+            @page {
+                size: 85.6mm 54mm;
+                margin: 0;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                display: block;
+            }
+            
+            .control-panel {
+                display: none;
+            }
+            
+            .preview-title {
+                display: none;
+            }
+            
+            .student-card {
+                width: 85.6mm;
+                height: 54mm;
+                box-shadow: none;
+                border-radius: 8px;
+                page-break-after: always;
+                margin: 0;
+            }
+            
+            .card-front .header {
+                height: 16mm;
+            }
+            
+            .card-back .black-bar {
+                height: 10mm;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                flex: 1 1 auto;
+                max-height: none;
+            }
+            
+            .student-card {
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .preview-title {
+                width: 100%;
+                max-width: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="control-panel">
+            <h1>🎓 学生证生成系统</h1>
+            
+            <div class="form-section-title">基本信息</div>
+            
+            <div class="form-group">
+                <label for="universityName">大学名称</label>
+                <input type="text" id="universityName" value="Памир Университети">
+            </div>
+            
+            <div class="form-group">
+                <label for="cardSubtitle">副标题</label>
+                <input type="text" id="cardSubtitle" value="МЕЖДУНАРОДНЫЙ СТУДЕНЧЕСКИЙ БИЛЕТ">
+            </div>
+            
+            <div class="form-group">
+                <label for="logo">校徽</label>
+                <input type="file" id="logo" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label for="photo">学生照片</label>
+                <input type="file" id="photo" accept="image/*">
+            </div>
+            
+            <div class="form-separator"></div>
+            <div class="form-section-title">学生信息</div>
+            
+            <div class="form-group">
+                <label for="nameLabel">姓名标签</label>
+                <input type="text" id="nameLabel" value="ИМЯ">
+            </div>
+            
+            <div class="form-group">
+                <label for="studentName">学生姓名</label>
+                <input type="text" id="studentName" value="Ryan Van">
+            </div>
+            
+            <div class="form-group">
+                <label for="idLabel">学号标签</label>
+                <input type="text" id="idLabel" value="НОМЕР СТУДЕНТА">
+            </div>
+            
+            <div class="form-group">
+                <label for="studentId">学生证号</label>
+                <input type="text" id="studentId" value="INT140639">
+            </div>
+            
+            <div class="form-group">
+                <label for="facultyLabel">院系标签</label>
+                <input type="text" id="facultyLabel" value="ФАКУЛЬТЕТ">
+            </div>
+            
+            <div class="form-group">
+                <label for="faculty">院系</label>
+                <input type="text" id="faculty" value="Faculty of Physics">
+            </div>
+            
+            <div class="form-separator"></div>
+            <div class="form-section-title">日期信息</div>
+            
+            <div class="form-group">
+                <label for="issueDateLabel">发证日期标签</label>
+                <input type="text" id="issueDateLabel" value="ДАТА ВЫДАЧИ">
+            </div>
+            
+            <div class="form-group">
+                <label for="issueDate">发证日期</label>
+                <input type="date" id="issueDate" value="2023-11-12">
+            </div>
+            
+            <div class="form-group">
+                <label for="validDateLabel">有效期标签</label>
+                <input type="text" id="validDateLabel" value="ДЕЙСТВИТЕЛЕН ДО">
+            </div>
+            
+            <div class="form-group">
+                <label for="validDate">有效期至</label>
+                <input type="date" id="validDate" value="2027-11-12">
+            </div>
+            
+            <div class="form-separator"></div>
+            <div class="form-section-title">背面信息</div>
+            
+            <div class="form-group">
+                <label for="addressTitle">地址标题</label>
+                <input type="text" id="addressTitle" value="АДРЕС ВЛАДЕЛЬЦА">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">地址</label>
+                <input type="text" id="address" value="Chui Avenue 720, Bishkek 720001">
+            </div>
+            
+            <div class="form-group">
+                <label for="notice">注意事项</label>
+                <textarea id="notice">Эта карта является собственностью университета и должна быть возвращена по требованию. В случае находки, пожалуйста, верните в ближайший офис университета.</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="signatureText">签名</label>
+                <input type="text" id="signatureText" value="Ryan Van">
+            </div>
+            
+            <div class="form-group">
+                <label for="signatureLabel">签名标签</label>
+                <input type="text" id="signatureLabel" value="Подпись владельца">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="updateCard()">更新预览</button>
+                <button class="btn-secondary" onclick="window.print()">打印学生证</button>
+            </div>
+        </div>
+        
+        <div class="preview-area">
+            <div class="preview-title">学生证预览 - 正面</div>
+            <div class="student-card card-front">
+                <div class="header">
+                    <div class="logo-container">
+                        <img id="logoImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%234a5568'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='14'%3ELOGO%3C/text%3E%3C/svg%3E" alt="Logo">
+                    </div>
+                    <div class="header-text">
+                        <div class="university-name" id="universityNameDisplay">Памир Университети</div>
+                        <div class="card-subtitle" id="cardSubtitleDisplay">МЕЖДУНАРОДНЫЙ СТУДЕНЧЕСКИЙ БИЛЕТ</div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="photo-container">
+                        <img id="photoImg" style="display:none;" alt="Student Photo">
+                        <div class="photo-placeholder" id="photoPlaceholder">
+                            学生照片<br>3x4
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-group">
+                            <div class="info-label" id="nameLabelDisplay">ИМЯ</div>
+                            <div class="info-value" id="studentNameDisplay">Ryan Van</div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <div class="info-label" id="idLabelDisplay">НОМЕР СТУДЕНТА</div>
+                            <div class="info-value" id="studentIdDisplay">INT140639</div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <div class="info-label" id="facultyLabelDisplay">ФАКУЛЬТЕТ</div>
+                            <div class="info-value" id="facultyDisplay">Faculty of Physics</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="date-group">
+                        <div class="date-label" id="issueDateLabelDisplay">ДАТА ВЫДАЧИ</div>
+                        <div class="date-value" id="issueDateDisplay">2023-11-12</div>
+                    </div>
+                    <div class="date-group">
+                        <div class="date-label" id="validDateLabelDisplay">ДЕЙСТВИТЕЛЕН ДО</div>
+                        <div class="date-value" id="validDateDisplay">2027-11-12</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-title">学生证预览 - 背面</div>
+            <div class="student-card card-back">
+                <div class="black-bar"></div>
+                
+                <div class="content">
+                    <div class="address-section">
+                        <div class="section-title" id="addressTitleDisplay">АДРЕС ВЛАДЕЛЬЦА</div>
+                        <div class="address-text" id="addressDisplay">Chui Avenue 720, Bishkek 720001</div>
+                    </div>
+                    
+                    <div class="notice-text" id="noticeDisplay">
+                        Эта карта является собственностью университета и должна быть возвращена по требованию. В случае находки, пожалуйста, верните в ближайший офис университета.
+                    </div>
+                    
+                    <div class="signature-section">
+                        <div class="signature-area">
+                            <div class="signature-text" id="signatureTextDisplay">Ryan Van</div>
+                            <div class="signature-label" id="signatureLabelDisplay">Подпись владельца</div>
+                        </div>
+                        <div class="back-logo">
+                            <img id="backLogoImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%234a5568'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='14'%3ELOGO%3C/text%3E%3C/svg%3E" alt="Logo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCard();
+            
+            // 为所有输入框添加实时更新
+            const inputs = document.querySelectorAll('input[type="text"], input[type="date"], textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateCard);
+            });
+        });
+        
+        // 处理校徽上传
+        document.getElementById('logo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoImg').src = e.target.result;
+                    document.getElementById('backLogoImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 处理照片上传
+        document.getElementById('photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('photoImg');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('photoPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 更新学生证显示
+        function updateCard() {
+            // 更新正面信息
+            document.getElementById('universityNameDisplay').textContent = 
+                document.getElementById('universityName').value || '大学名称';
+            document.getElementById('cardSubtitleDisplay').textContent = 
+                document.getElementById('cardSubtitle').value || '学生证';
+            
+            document.getElementById('nameLabelDisplay').textContent = 
+                document.getElementById('nameLabel').value;
+            document.getElementById('studentNameDisplay').textContent = 
+                document.getElementById('studentName').value || '学生姓名';
+            
+            document.getElementById('idLabelDisplay').textContent = 
+                document.getElementById('idLabel').value;
+            document.getElementById('studentIdDisplay').textContent = 
+                document.getElementById('studentId').value || '学号';
+            
+            document.getElementById('facultyLabelDisplay').textContent = 
+                document.getElementById('facultyLabel').value;
+            document.getElementById('facultyDisplay').textContent = 
+                document.getElementById('faculty').value || '院系';
+            
+            document.getElementById('issueDateLabelDisplay').textContent = 
+                document.getElementById('issueDateLabel').value;
+            document.getElementById('issueDateDisplay').textContent = 
+                formatDate(document.getElementById('issueDate').value);
+            
+            document.getElementById('validDateLabelDisplay').textContent = 
+                document.getElementById('validDateLabel').value;
+            document.getElementById('validDateDisplay').textContent = 
+                formatDate(document.getElementById('validDate').value);
+            
+            // 更新背面信息
+            document.getElementById('addressTitleDisplay').textContent = 
+                document.getElementById('addressTitle').value;
+            document.getElementById('addressDisplay').textContent = 
+                document.getElementById('address').value || '地址';
+            
+            document.getElementById('noticeDisplay').textContent = 
+                document.getElementById('notice').value;
+            
+            document.getElementById('signatureTextDisplay').textContent = 
+                document.getElementById('signatureText').value || '签名';
+            document.getElementById('signatureLabelDisplay').textContent = 
+                document.getElementById('signatureLabel').value;
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '____-__-__';
+            return dateString;
+        }
+    </script>
+</body>
+</html>
