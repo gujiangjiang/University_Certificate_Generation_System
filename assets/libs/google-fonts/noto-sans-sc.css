@@ -1,0 +1,35 @@
+/*
+ * Noto Sans SC 本地字体文件
+ * 权重: 400 (Regular), 500 (Medium), 700 (Bold)
+ */
+
+/* Noto Sans SC - Regular 400 */
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/noto-sans-sc-400.woff2') format('woff2');
+  /* 核心修正：移除了 unicode-range 属性，以确保该字体适用于所有字符（包括中文）*/
+}
+
+/* Noto Sans SC - Medium 500 */
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/noto-sans-sc-500.woff2') format('woff2');
+  /* 核心修正：移除了 unicode-range 属性 */
+}
+
+/* Noto Sans SC - Bold 700 */
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/noto-sans-sc-700.woff2') format('woff2');
+  /* 核心修正：移除了 unicode-range 属性 */
+}
+

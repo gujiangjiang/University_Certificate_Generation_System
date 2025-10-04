@@ -1,5 +1,4 @@
-/* Google Fonts for better typography */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+/* 核心修改：移除了顶部的 @import 规则 */
 
 :root {
     --primary-color: #2c5aa0;
@@ -252,4 +251,3 @@ button {
         border-radius: 0 !important;
     }
 }
-
