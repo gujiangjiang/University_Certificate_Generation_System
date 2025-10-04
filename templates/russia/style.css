@@ -218,13 +218,11 @@
     overflow: hidden;
     position: relative;
 }
-/* --- 修改开始 --- */
 .logo-container img {
     width: 100%; /* 修改：让图片宽度填满圆形容器 */
     height: 100%; /* 修改：让图片高度填满圆形容器 */
     object-fit: cover; /* 修改：使用cover模式裁剪图片以填充，确保不变形 */
 }
-/* --- 修改结束 --- */
 .logo-container .placeholder {
     width: 100%;
     height: 100%;
@@ -387,7 +385,6 @@
     font-size: 10px;
     color: #999;
 }
-/* --- 修改开始 --- */
 .back-logo {
     width: 60px;
     height: 60px;
@@ -400,7 +397,6 @@
     height: 100%;
     object-fit: cover; /* 修改：使用cover模式裁剪图片以填充，确保不变形 */
 }
-/* --- 修改结束 --- */
 .back-logo .placeholder {
     width: 100%;
     height: 100%;
@@ -421,4 +417,28 @@
     border-radius: 8px;
     text-align: center;
     width: 500px;
+}
+
+/* --- 打印样式修正 (最终版) --- */
+@media print {
+    /* 隐藏预览时的标题，打印时不需要。使用更高优先级的选择器。 */
+    #preview-container > .preview-title {
+        display: none !important;
+    }
+
+    /* 修正学生证在打印时的尺寸和边距问题 */
+    /* 使用更高优先级的选择器 (#preview-container > .student-card) 来覆盖 main.css 中的强制拉伸样式 */
+    #preview-container > .student-card {
+        width: 500px !important; /* 恢复卡片原始宽度 */
+        height: 320px !important; /* 恢复卡片原始高度 */
+        margin: 20px auto !important; /* 居中并添加垂直间距 */
+        box-shadow: none !important; /* 移除阴影 */
+        page-break-inside: avoid !important; /* 防止卡片在页面中断开 */
+    }
+
+    /* 确保卡片背景色能被打印（某些浏览器默认不打印背景） */
+    .student-card, .card-front .header, .card-body, .card-back .black-bar {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }
