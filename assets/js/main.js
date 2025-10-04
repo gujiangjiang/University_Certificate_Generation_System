@@ -251,13 +251,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     selectors.printBtn.addEventListener('click', () => {
         // --- (*** 已修改 ***) ---
-        // 打印前，暂时移除缩放，确保打印的是原始大小
-        const previewEl = selectors.previewContainer.firstElementChild;
-        if (previewEl) {
-            previewEl.style.transform = 'none';
+        // 打印前，暂时移除所有预览元素的缩放，确保打印的是原始大小
+        const previewEls = selectors.previewContainer.children;
+        for (const el of previewEls) {
+            if (el) {
+                // 使用内联样式清除 transform
+                el.style.transform = 'none';
+            }
         }
 
-        updateAll();
+        updateAll(); // 重新运行更新以确保内容最新
         showToast({ message: '正在准备打印...', type: 'info', duration: 2500 });
         
         setTimeout(() => {
@@ -269,43 +272,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 8. 辅助函数
 
-    // --- (*** 新增 ***) ---
+    // --- (*** 已修改 ***) ---
     // 核心功能：更新预览区的缩放比例
     function updatePreviewScaling() {
-        const previewEl = selectors.previewContainer.firstElementChild; // 获取实际的证件元素
         const area = selectors.previewArea;
+        const container = selectors.previewContainer;
 
-        // 如果预览区或者证件元素不存在，则不执行
-        if (!previewEl || !area) return;
+        if (!container || !area) return;
 
-        // 移除 placeholder-text，因为它会影响尺寸计算
-        if (previewEl.classList.contains('placeholder-text')) {
-             previewEl.style.transform = 'none'; // 如果是占位符，则不缩放
-             return;
+        // 获取预览容器中所有的直接子元素
+        const previewEls = Array.from(container.children);
+        
+        // 如果没有可预览的元素，就直接返回
+        if (previewEls.length === 0) return;
+
+        // 检查是否存在占位符文本，如果是，则不进行缩放
+        const placeholder = container.querySelector('.placeholder-text');
+        if (placeholder) {
+            placeholder.style.transform = 'none';
+            return;
         }
 
-        // 先重置 transform，以获取元素的原始（无缩放）尺寸
-        previewEl.style.transform = 'none';
+        // 核心逻辑修改：
+        // 当预览内容只有一个子元素时（例如单个证书），我们采用JS动态计算缩放。
+        // 当有多个子元素时（例如学生证正反面+标题），我们则依赖CSS媒体查询进行响应式缩放，
+        // 此时只需清除JS可能添加的内联transform样式即可。
+        if (previewEls.length === 1) {
+            const previewEl = previewEls[0];
+            
+            // 先重置 transform，以获取元素的原始（无缩放）尺寸
+            previewEl.style.transform = 'none';
 
-        const areaWidth = area.clientWidth;
-        const areaHeight = area.clientHeight;
+            const areaWidth = area.clientWidth;
+            const areaHeight = area.clientHeight;
 
-        const elWidth = previewEl.offsetWidth;
-        const elHeight = previewEl.offsetHeight;
+            const elWidth = previewEl.offsetWidth;
+            const elHeight = previewEl.offsetHeight;
 
-        // 如果元素没有尺寸，则不进行计算
-        if (elWidth === 0 || elHeight === 0) return;
+            // 如果元素没有尺寸，则不进行计算
+            if (elWidth === 0 || elHeight === 0) return;
 
-        // 计算宽度和高度方向上的缩放比例
-        const scaleX = areaWidth / elWidth;
-        const scaleY = areaHeight / elHeight;
+            // 计算宽度和高度方向上的缩放比例
+            const scaleX = areaWidth / elWidth;
+            const scaleY = areaHeight / elHeight;
 
-        // 取两个比例中较小的一个，作为最终的缩放比例，以保证整个元素都能被看见
-        // 同时减去一个很小的值 (0.05) 作为边距，避免元素紧贴边缘
-        const scale = Math.min(scaleX, scaleY) - 0.05;
+            // 取两个比例中较小的一个，作为最终的缩放比例，以保证整个元素都能被看见
+            // 同时减去一个很小的值 (0.05) 作为边距，避免元素紧贴边缘
+            const scale = Math.min(scaleX, scaleY) - 0.05;
 
-        // 应用计算出的缩放比例
-        previewEl.style.transform = `scale(${scale > 0 ? scale : 1})`;
+            // 应用计算出的缩放比例
+            previewEl.style.transform = `scale(${scale > 0 ? scale : 1})`;
+        } else {
+            // 对于多元素预览（如学生证），清除JS设置的transform，让CSS来控制
+            previewEls.forEach(el => {
+                el.style.transform = ''; // 移除内联样式，让CSS规则生效
+            });
+        }
     }
 
     function resetUI(isTemplateLoading = false) {

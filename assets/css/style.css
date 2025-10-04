@@ -260,14 +260,21 @@ button {
         align-items: flex-start;
         overflow: visible;
     }
-    #preview-container > * {
+    
+    /* --- (*** 修改点 ***) --- */
+    /* 新增此规则，确保预览容器在打印时占据100%宽度，为内部元素（如学生证）的居中提供容器 */
+    #preview-container {
+        width: 100%;
+    }
+
+    /* --- (*** 修改点 ***) --- */
+    /* 将通配符选择器 `*` 修改为 `.certificate`，使其只对证书生效，避免影响学生证等其他元素 */
+    #preview-container > .certificate {
         width: 100% !important;
         height: 100vh !important;
         box-shadow: none !important;
         margin: 0 !important;
         border-radius: 0 !important;
-        /* --- (*** 新增 ***) --- */
-        /* 打印时取消所有 transform 变换 */
         transform: none !important;
     }
 }
