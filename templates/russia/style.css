@@ -419,31 +419,40 @@
     width: 500px;
 }
 
-/* --- 打印样式修正 (最终完美版，包含阴影) --- */
+/* --- 打印样式修正 (最终布局优化版) --- */
 @media print {
-    /* 隐藏预览时的标题，打印时不需要。使用更高优先级的选择器。 */
+    /* 隐藏预览时的标题，打印时不需要 */
     #preview-container > .preview-title {
         display: none !important;
     }
 
-    /* 修正学生证在打印时的尺寸和边距问题 */
-    /* 使用更高优先级的选择器 (#preview-container > .student-card) 来覆盖 main.css 中的强制拉伸样式 */
+    /* 学生证通用打印样式：尺寸、阴影、圆角等 */
     #preview-container > .student-card {
-        width: 500px !important; /* 恢复卡片原始宽度 */
-        height: 320px !important; /* 恢复卡片原始高度 */
-        margin: 20px auto !important; /* 居中并添加垂直间距 */
-        
-        /* --- 核心修改：移除 'box-shadow: none !important;' 并添加自定义阴影 --- */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; /* 强制打印阴影，模拟复印效果 */
-        
-        page-break-inside: avoid !important; /* 防止卡片在页面中断开 */
-        
-        /* --- 强制保留圆角和内容裁剪 --- */
-        border-radius: 16px !important; /* 强制打印圆角 */
-        overflow: hidden !important; /* 强制隐藏溢出内容，配合圆角使用 */
+        width: 500px !important;
+        height: 320px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        page-break-inside: avoid !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
     }
 
-    /* 确保卡片背景色能被打印（某些浏览器默认不打印背景） */
+    /* --- 核心修改：分别为正反面设置不同的外边距以调整打印位置 --- */
+    
+    /* 正面卡片定位 */
+    #preview-container > .card-front {
+        margin-top: 40mm !important; /* 距顶端40毫米 */
+        margin-bottom: 30mm !important; /* 与背面卡片相距30毫米 */
+    }
+
+    /* 背面卡片定位（重置边距，它会紧跟在正面下方） */
+    #preview-container > .card-back {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* 确保卡片背景色能被打印 */
     .student-card, .card-front .header, .card-body, .card-back .black-bar {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
