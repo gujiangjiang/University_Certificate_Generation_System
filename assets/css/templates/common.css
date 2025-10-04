@@ -32,7 +32,9 @@
 }
 
 /* 证书通用头部样式 */
-.certificate-header {
+/* 修改：将 .letter-header 选择器加入，使其与 .certificate-header 共享居中样式 */
+.certificate-header,
+.letter-header {
     text-align: center;
     margin-bottom: 20px;
 }
