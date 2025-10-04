@@ -1,19 +1,46 @@
 {
     "name": "俄罗斯帕米尔大学",
-    "universityName": "Памир Университети",
-    "universityNameEn": "PAMIR UNIVERSITY",
+    "universityInfo": {
+        "universityName": "Памир Университети",
+        "universityNameEn": "PAMIR UNIVERSITY"
+    },
+    "studentInfoDefaults": {
+        "studentName": "Иванов Иван Иванович",
+        "passportNumber": "A1234567",
+        "studentId": "2024091234",
+        "faculty": "Факультет информационных технологий",
+        "specialty": "Компьютерные науки",
+        "enrollmentDate": "2024-09-01",
+        "studyPeriod": "4"
+    },
     "documents": {
       "admission_letter": {
         "name": "录取通知书",
-        "available": true
+        "available": true,
+        "defaults": {
+            "letterNumber": "№ 2024/09/1234",
+            "admissionDate": "2024-07-15",
+            "educationLevel": "бакалавриат",
+            "deanName": "Петров Петр Петрович"
+        }
       },
       "enrollment_cert": {
         "name": "在读证明",
-        "available": true
+        "available": true,
+        "defaults": {
+            "certificateNumber": "С-2024-001234",
+            "certificateDate": "2024-01-15",
+            "course": "1",
+            "rectorName": "Сидоров Сидор Сидорович"
+        }
       },
       "student_card": {
         "name": "学生证",
-        "available": true
+        "available": true,
+        "defaults": {
+            "cardSubtitle": "МЕЖДУНАРОДНЫЙ СТУДЕНЧЕСКИЙ БИЛЕТ",
+            "address": "Chui Avenue 720, Bishkek 720001"
+        }
       }
     }
 }

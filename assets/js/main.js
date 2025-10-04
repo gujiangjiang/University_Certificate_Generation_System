@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         currentTemplate: null,
         currentDocument: null,
+        config: null, // 用于存储加载的模板配置
     };
 
     const selectors = {
@@ -16,55 +17,52 @@ document.addEventListener('DOMContentLoaded', () => {
         previewBtn: document.getElementById('preview-btn'),
     };
 
-    // 1. 初始化：加载模板清单
+    // 1. 初始化
     async function initialize() {
         try {
             const response = await fetch('templates/manifest.json');
-            if (!response.ok) {
-                throw new Error('无法加载模板清单 manifest.json');
-            }
+            if (!response.ok) throw new Error('无法加载模板清单 manifest.json');
             const manifest = await response.json();
             
             manifest.templates.forEach(template => {
-                const option = new Option(template.name, template.id);
-                selectors.templateSelector.appendChild(option);
+                selectors.templateSelector.appendChild(new Option(template.name, template.id));
             });
             
             bindCommonFormEvents();
-
         } catch (error) {
             console.error('初始化失败:', error);
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：${error.message}</div>`;
         }
     }
 
-    // 2. 加载选定的模板
+    // 2. 加载模板 (核心重构)
     async function loadTemplate(templateId) {
         if (!templateId) {
             resetUI();
             return;
         }
         state.currentTemplate = templateId;
-        
         resetUI(true);
 
         try {
-            const configResponse = await fetch(`templates/${templateId}/config.json`);
-            if (!configResponse.ok) {
-                throw new Error('无法加载 config.json');
-            }
-            const config = await configResponse.json();
-            
-            document.getElementById('universityName').value = config.universityName || '';
-            document.getElementById('universityNameEn').value = config.universityNameEn || '';
-            
+            const response = await fetch(`templates/${templateId}/config.json`);
+            if (!response.ok) throw new Error('无法加载 config.json');
+            state.config = await response.json(); // 保存配置
+
+            // 使用配置填充通用表单
+            populateForm(document.body, state.config.universityInfo);
+            populateForm(document.body, state.config.studentInfoDefaults);
+
             loadTemplateCSS(templateId);
 
+            // 动态显示通用信息模块
             selectors.commonInfoSection.classList.remove('hidden');
             selectors.commonStudentSection.classList.remove('hidden');
             selectors.actionButtons.classList.remove('hidden');
 
-            for (const [docId, docInfo] of Object.entries(config.documents)) {
+            // 创建文档选择按钮
+            selectors.documentSelector.innerHTML = ''; // 清空旧按钮
+            for (const [docId, docInfo] of Object.entries(state.config.documents)) {
                 if (docInfo.available) {
                     const button = document.createElement('button');
                     button.className = 'doc-type-btn';
@@ -73,16 +71,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectors.documentSelector.appendChild(button);
                 }
             }
-            updateAll(); 
+            // 初始加载时，如果默认有文档，则加载第一个
+            const firstDoc = document.querySelector('.doc-type-btn');
+            if(firstDoc) {
+                loadDocument(firstDoc.dataset.docId);
+            } else {
+                updateAll();
+            }
+
         } catch (error) {
             console.error(`加载模板 ${templateId} 失败:`, error);
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：加载模板失败。</div>`;
+            state.config = null;
         }
     }
     
-    // 3. 加载选定的文档
+    // 3. 加载文档 (核心重构)
     async function loadDocument(docId) {
-        if (state.currentDocument === docId) return;
+        if (state.currentDocument === docId && selectors.docFormContainer.innerHTML !== '') return;
         state.currentDocument = docId;
 
         document.querySelectorAll('.doc-type-btn').forEach(btn => {
@@ -100,6 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
             selectors.docFormContainer.innerHTML = doc.getElementById('form-snippet')?.innerHTML || '';
             selectors.previewContainer.innerHTML = doc.getElementById('preview-snippet')?.innerHTML || '';
 
+            // 使用配置填充文档特定表单
+            if (state.config.documents[docId]?.defaults) {
+                populateForm(selectors.docFormContainer, state.config.documents[docId].defaults);
+            }
+
             bindDocumentFormEvents();
             updateAll();
 
@@ -109,14 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. 更新所有预览（包括计算字段和常规字段）
+    // 4. 更新所有预览
     function updateAll() {
         if (!state.currentTemplate) return;
         updateCalculatedFields();
         updatePreview();
     }
 
-    // 5. 更新常规预览（读取所有 data-bind-to 的值）
+    // 5. 更新常规预览
     function updatePreview() {
         const inputs = document.querySelectorAll('.control-panel [data-bind-to]');
         inputs.forEach(input => {
@@ -152,11 +163,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. 更新所有自动计算的字段
+    // 6. 更新计算字段
     function updateCalculatedFields() {
         const enrollmentDateVal = document.getElementById('enrollmentDate')?.value;
         const studyPeriod = parseInt(document.getElementById('studyPeriod')?.value, 10);
-        const universityName = document.getElementById('universityName')?.value || 'университета'; // 提供一个默认值
+        const universityName = document.getElementById('universityName')?.value || 'университета';
 
         if (enrollmentDateVal) {
             const startDate = new Date(enrollmentDateVal.replace(/-/g, '/'));
@@ -164,18 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const academicYear = `${year}-${year + 1}`;
             
             document.querySelectorAll('[data-preview-id="academicYear"]').forEach(el => {
-                el.textContent = el.textContent.includes('-') ? academicYear : year;
+                 el.textContent = el.dataset.fullYear ? academicYear : year;
             });
             document.querySelectorAll('[data-preview-id="enrollYear"]').forEach(el => el.textContent = year);
             document.querySelectorAll('[data-preview-id="issueDate"]').forEach(el => el.textContent = formatDate(startDate));
 
-            if (studyPeriod) {
-                const endDate = new Date(startDate.setFullYear(startDate.getFullYear() + studyPeriod));
+            if (!isNaN(studyPeriod)) {
+                // 创建一个新的日期对象进行计算，避免修改原始的startDate
+                const endDate = new Date(startDate);
+                endDate.setFullYear(endDate.getFullYear() + studyPeriod);
                 document.querySelectorAll('[data-preview-id="validDate"]').forEach(el => el.textContent = formatDate(endDate));
             }
         }
         
-        // --- 核心修复：确保两处大学名称都被正确替换 ---
         const noticePreviewElement = document.querySelector('[data-preview-id="notice"]');
         if (noticePreviewElement) {
             const noticeText = `Эта карта является собственностью ${universityName} и должна быть возвращена по требованию. В случае находки, пожалуйста, верните в ближайший офис ${universityName}.`;
@@ -185,19 +197,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 7. 事件绑定
     function bindCommonFormEvents() {
-        const commonForms = [selectors.commonInfoSection, selectors.commonStudentSection];
-        commonForms.forEach(form => {
+        [selectors.commonInfoSection, selectors.commonStudentSection].forEach(form => {
             form.addEventListener('input', updateAll);
             form.addEventListener('change', updateAll);
         });
     }
 
     function bindDocumentFormEvents() {
-        const inputs = selectors.docFormContainer.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('input', updateAll);
-            input.addEventListener('change', updateAll);
-        });
+        selectors.docFormContainer.addEventListener('input', updateAll);
+        selectors.docFormContainer.addEventListener('change', updateAll);
     }
 
     selectors.templateSelector.addEventListener('change', (e) => loadTemplate(e.target.value));
@@ -217,14 +225,37 @@ document.addEventListener('DOMContentLoaded', () => {
         selectors.docFormContainer.innerHTML = '';
         if (!isTemplateLoading) {
             state.currentTemplate = null;
+            state.config = null;
+            selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个模板和证件类型</div>';
+            // 隐藏通用模块
             selectors.commonInfoSection.classList.add('hidden');
             selectors.commonStudentSection.classList.add('hidden');
             selectors.actionButtons.classList.add('hidden');
-            selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个模板和证件类型</div>';
+            // 清空通用表单
+            document.querySelectorAll('#common-info-section input, #common-student-section input').forEach(input => {
+                if (input.type === 'file') {
+                    // 创建一个新的文件输入框来重置
+                    const newInput = input.cloneNode(true);
+                    input.parentNode.replaceChild(newInput, input);
+                } else {
+                    input.value = '';
+                }
+            });
             removeTemplateCSS();
         }
     }
 
+    // 新增：通用表单填充函数
+    function populateForm(container, data) {
+        if (!data) return;
+        for (const [key, value] of Object.entries(data)) {
+            const input = container.querySelector(`#${key}`);
+            if (input) {
+                input.value = value;
+            }
+        }
+    }
+    
     function loadTemplateCSS(templateId) {
         removeTemplateCSS();
         const link = document.createElement('link');
@@ -240,7 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function formatDate(date) {
         if (!date) return '';
-        const d = (date instanceof Date) ? date : new Date(date.replace(/-/g, '/'));
+        const d = (date instanceof Date) ? date : new Date(String(date).replace(/-/g, '/'));
+        if (isNaN(d)) return '';
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 

@@ -2,11 +2,11 @@
     <h2 class="form-section-title">录取通知书信息</h2>
     <div class="form-group">
         <label for="letterNumber">信件编号</label>
-        <input type="text" id="letterNumber" data-bind-to="letterNumber" value="№ 2024/09/1234">
+        <input type="text" id="letterNumber" data-bind-to="letterNumber">
     </div>
     <div class="form-group">
         <label for="admissionDate">发信日期</label>
-        <input type="date" id="admissionDate" data-bind-to="admissionDate" value="2024-07-15">
+        <input type="date" id="admissionDate" data-bind-to="admissionDate">
     </div>
     <div class="form-group">
         <label for="educationLevel">教育层次</label>
@@ -18,7 +18,7 @@
     </div>
     <div class="form-group">
         <label for="deanName">院长姓名</label>
-        <input type="text" id="deanName" data-bind-to="deanName" value="Петров Петр Петрович">
+        <input type="text" id="deanName" data-bind-to="deanName">
     </div>
 </div>
 
@@ -35,13 +35,13 @@
                     </svg>
                 </div>
             </div>
-            <div class="university-name-display" data-preview-id="universityName">ПАМИР УНИВЕРСИТЕТ</div>
-            <div class="university-name-en-display" data-preview-id="universityNameEn">PAMIR UNIVERSITY</div>
+            <div class="university-name-display" data-preview-id="universityName"></div>
+            <div class="university-name-en-display" data-preview-id="universityNameEn"></div>
         </div>
         <div class="document-title">ПИСЬМО О ЗАЧИСЛЕНИИ</div>
         <div class="letter-body">
-            <span data-preview-id="letterNumber">№ 2024/09/1234</span> от 
-            <span data-preview-id="admissionDate">2024-07-15</span>
+            <span data-preview-id="letterNumber"></span> от 
+            <span data-preview-id="admissionDate"></span>
             
             <div class="student-info">
                 <div class="info-row"><div class="info-label">ФИО студента:</div><div class="info-value" data-preview-id="studentName"></div></div>
@@ -51,7 +51,7 @@
                 <div class="info-row"><div class="info-label">Специальность:</div><div class="info-value" data-preview-id="specialty"></div></div>
                 <div class="info-row"><div class="info-label">Уровень образования:</div><div class="info-value" data-preview-id="educationLevel"></div></div>
                 <div class="info-row"><div class="info-label">Срок обучения:</div><div class="info-value" data-preview-id="studyPeriod" data-suffix=" года"></div></div>
-                <div class="info-row"><div class="info-label">Учебный год:</div><div class="info-value" data-preview-id="academicYear"></div></div>
+                <div class="info-row"><div class="info-label">Учебный год:</div><div class="info-value" data-preview-id="academicYear" data-full-year="true"></div></div>
             </div>
             <p>
                 Уведомляем Вас, что Вы успешно зачислены в <span data-preview-id="universityName"></span> 
