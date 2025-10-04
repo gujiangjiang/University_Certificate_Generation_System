@@ -1,8 +1,14 @@
 {
-    "templates": [
+    "countries": [
         {
+            "name": "吉尔吉斯斯坦",
             "id": "kyrgyzstan",
-            "name": "【吉尔吉斯斯坦】帕米尔大学"
+            "universities": [
+                {
+                    "name": "帕米尔大学",
+                    "id": "pamir_university"
+                }
+            ]
         }
     ]
 }

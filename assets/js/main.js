@@ -1,47 +1,51 @@
+// (*** 文件已全面重构以支持国家->大学的二级选择逻辑 ***)
 document.addEventListener('DOMContentLoaded', () => {
+    // 全局状态管理对象
     const state = {
-        currentTemplate: null,
-        currentDocument: null,
-        config: null,
-        // (*** 新增 ***) "管家"对象：用于缓存需要跨页面保留状态的动态输入框
-        dynamicInputs: {},
+        manifest: null, // 存储加载的 manifest.json 内容
+        currentCountryId: null, // 当前选择的国家ID
+        currentUniversityId: null, // 当前选择的大学ID (即模板ID)
+        currentDocument: null, // 当前选择的文档类型 (如录取通知书)
+        config: null, // 当前模板的配置信息
+        dynamicInputs: {}, // 用于缓存跨文档切换时需要保留的文件输入框
     };
 
+    // DOM元素选择器缓存
     const selectors = {
-        templateSelector: document.getElementById('template-selector'),
+        countrySelector: document.getElementById('country-selector'),
+        universitySelector: document.getElementById('university-selector'),
         mainContentArea: document.getElementById('main-content-area'),
         documentSelector: document.getElementById('document-selector'),
         docFormContainer: document.getElementById('document-form-container'),
         previewContainer: document.getElementById('preview-container'),
-        // --- (*** 新增 ***) ---
-        // 获取预览区域的 DOM 元素，用于计算缩放比例
         previewArea: document.querySelector('.preview-area'),
         printBtn: document.getElementById('print-btn'),
         previewBtn: document.getElementById('preview-btn'),
     };
 
-    // 1. 初始化
+    // 1. 初始化函数 - 应用启动入口
     async function initialize() {
         try {
+            // 显示风险提示
             showToast({
                 message: '<strong>风险提醒：</strong>本工具仅供学习和技术测试使用，请勿用于非法用途。使用本工具造成的任何后果由使用者自行承担。',
                 type: 'warning',
                 persistent: true
             });
 
+            // 加载模板清单 (manifest.json)
             const response = await fetch('/templates/manifest.json');
             if (!response.ok) throw new Error('无法加载模板清单 manifest.json');
-            const manifest = await response.json();
+            state.manifest = await response.json();
             
-            manifest.templates.forEach(template => {
-                selectors.templateSelector.appendChild(new Option(template.name, template.id));
-            });
+            // 填充国家选择框
+            populateCountrySelector();
             
-            bindFormEvents();
+            // 绑定所有需要的事件监听器
+            bindEventListeners();
             setupCustomFileUploads(document.body);
 
-            // --- (*** 新增 ***) ---
-            // 添加窗口大小变化的监听器，当用户调整浏览器窗口时，重新计算缩放
+            // 监听窗口大小变化，用于实时调整预览缩放
             window.addEventListener('resize', updatePreviewScaling);
 
         } catch (error) {
@@ -51,32 +55,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. 加载模板
-    async function loadTemplate(templateId) {
-        if (!templateId) {
+    // 2. 填充国家选择框
+    function populateCountrySelector() {
+        if (!state.manifest || !state.manifest.countries) return;
+        
+        // 清空现有选项
+        selectors.countrySelector.innerHTML = '<option value="">请先选择一个国家...</option>';
+        
+        // 遍历清单中的国家并添加到选择框
+        state.manifest.countries.forEach(country => {
+            selectors.countrySelector.appendChild(new Option(country.name, country.id));
+        });
+    }
+
+    // 3. 根据选择的国家填充大学选择框
+    function populateUniversitySelector(countryId) {
+        state.currentCountryId = countryId;
+        const uniSelector = selectors.universitySelector;
+        
+        // 清空并禁用大学选择框
+        uniSelector.innerHTML = '<option value="">请先选择一所大学...</option>';
+        uniSelector.disabled = true;
+
+        if (!countryId) {
+            resetUI(false); // 如果国家被取消选择，重置UI
+            return;
+        }
+
+        // 在清单中找到对应的国家
+        const country = state.manifest.countries.find(c => c.id === countryId);
+        if (country && country.universities) {
+            // 填充大学选项
+            country.universities.forEach(uni => {
+                uniSelector.appendChild(new Option(uni.name, uni.id));
+            });
+            // 启用大学选择框
+            uniSelector.disabled = false;
+        }
+    }
+    
+    // 4. 加载大学模板 (核心功能)
+    async function loadUniversityTemplate(universityId) {
+        if (!universityId || !state.currentCountryId) { // (*** 修改点 ***) 确保国家ID也存在
             resetUI();
             return;
         }
-        state.currentTemplate = templateId;
-        resetUI(true);
+        state.currentUniversityId = universityId;
+        resetUI(true); // 部分重置UI，保留已填写的通用信息
 
         try {
-            const response = await fetch(`/templates/${templateId}/config.json`);
-            if (!response.ok) throw new Error('无法加载 config.json');
+            // (*** 修改点 ***) 构建新的、包含国家和大学层级的路径来加载配置文件
+            const configPath = `/templates/${state.currentCountryId}/${universityId}/config.json`;
+            const response = await fetch(configPath);
+            if (!response.ok) throw new Error(`无法加载模板配置文件： ${configPath}`);
             state.config = await response.json();
 
+            // 填充通用大学信息和通用学生信息
             populateForm(document.body, state.config.universityInfo);
             populateForm(document.body, state.config.studentInfoDefaults);
 
-            loadTemplateCSS(templateId);
+            // 加载模板专属的CSS样式
+            loadTemplateCSS(universityId);
             selectors.mainContentArea.classList.remove('hidden');
 
-            const selectedTemplateName = selectors.templateSelector.options[selectors.templateSelector.selectedIndex].text;
+            const selectedUniversityName = selectors.universitySelector.options[selectors.universitySelector.selectedIndex].text;
             showToast({
-                message: `已选择模板：${selectedTemplateName}。<br>请完善信息后选择证件类型。`,
+                message: `已选择模板：${selectedUniversityName}。<br>请完善信息后选择证件类型。`,
                 type: 'success'
             });
 
+            // 根据配置文件生成可选择的文档按钮 (如学生证、在读证明等)
             selectors.documentSelector.innerHTML = '';
             for (const [docId, docInfo] of Object.entries(state.config.documents)) {
                 if (docInfo.available) {
@@ -87,28 +135,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectors.documentSelector.appendChild(button);
                 }
             }
+            
+            // 自动加载第一个可用的文档类型
             const firstDoc = document.querySelector('.doc-type-btn');
             if(firstDoc) {
                 loadDocument(firstDoc.dataset.docId);
             } else {
-                updateAll();
+                updateAll(); // 如果没有可加载的文档，也刷新一次预览
             }
 
         } catch (error) {
-            console.error(`加载模板 ${templateId} 失败:`, error);
+            console.error(`加载模板 ${universityId} 失败:`, error);
             showToast({ message: '错误：加载模板失败。', type: 'warning' });
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：加载模板失败。</div>`;
             state.config = null;
         }
     }
     
-    // 3. 加载文档
+    // 5. 加载具体的文档HTML片段 (表单 + 预览)
     async function loadDocument(docId) {
+        // 如果点击的是当前已加载的文档，则不重复加载
         if (state.currentDocument === docId && selectors.docFormContainer.innerHTML !== '') return;
         
-        // (*** 已修改 ***) 核心修复：在移除旧表单前，让"管家"记住里面的文件输入框
+        // 核心修复：在移除旧表单前，缓存已选择的文件输入框，防止切换文档时丢失
         selectors.docFormContainer.querySelectorAll('input[type="file"]').forEach(input => {
-            // 只有当用户确实选择了文件时，才进行缓存
             if (input.files && input.files.length > 0) {
                 state.dynamicInputs[input.id] = input;
             }
@@ -116,35 +166,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.currentDocument = docId;
 
+        // 更新文档按钮的激活状态
         document.querySelectorAll('.doc-type-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.docId === docId);
         });
 
         try {
-            const response = await fetch(`/templates/${state.currentTemplate}/${docId}.html`);
-            if (!response.ok) throw new Error(`无法加载 ${docId}.html`);
+            // (*** 修改点 ***) 构建新的、包含国家和大学层级的路径来加载文档HTML文件
+            const docPath = `/templates/${state.currentCountryId}/${state.currentUniversityId}/${docId}.html`;
+            const response = await fetch(docPath);
+            if (!response.ok) throw new Error(`无法加载文档： ${docPath}`);
             const htmlContent = await response.text();
             
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlContent, 'text/html');
 
+            // 将HTML中的表单片段和预览片段注入到页面相应位置
             selectors.docFormContainer.innerHTML = doc.getElementById('form-snippet')?.innerHTML || '';
             selectors.previewContainer.innerHTML = doc.getElementById('preview-snippet')?.innerHTML || '';
             
-            // (*** 已修改 ***) 核心修复：加载新表单后，检查"管家"有没有存货
+            // 核心修复：加载新表单后，检查缓存中是否有同ID的文件输入框，如有则替换
             selectors.docFormContainer.querySelectorAll('input[type="file"]').forEach(newInput => {
-                // 如果管家记住了这个ID的输入框，就用缓存的旧框替换掉新的空框
                 if (state.dynamicInputs[newInput.id]) {
                     newInput.parentNode.replaceChild(state.dynamicInputs[newInput.id], newInput);
                 }
             });
 
+            // 为新加载的表单片段中的文件上传按钮绑定事件
             setupCustomFileUploads(selectors.docFormContainer);
 
+            // 如果该文档有默认值，则填充表单
             if (state.config.documents[docId]?.defaults) {
                 populateForm(selectors.docFormContainer, state.config.documents[docId].defaults);
             }
             
+            // 全面更新预览
             updateAll();
 
             const docName = state.config.documents[docId].name;
@@ -157,17 +213,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. 更新所有预览
-    function updateAll() {
-        if (!state.currentTemplate) return;
-        updateCalculatedFields();
-        updatePreview();
-        // --- (*** 新增 ***) ---
-        // 每次更新内容后，都调用缩放函数，以确保预览大小正确
-        updatePreviewScaling();
+    // 6. 绑定所有事件监听器
+    function bindEventListeners() {
+        // 监听国家选择框的变化
+        selectors.countrySelector.addEventListener('change', (e) => {
+            populateUniversitySelector(e.target.value);
+            loadUniversityTemplate(null); // 清空之前的模板
+        });
+
+        // 监听大学选择框的变化
+        selectors.universitySelector.addEventListener('change', (e) => {
+            loadUniversityTemplate(e.target.value);
+        });
+
+        // 监听文档类型按钮的点击 (事件委托)
+        selectors.documentSelector.addEventListener('click', (e) => {
+            if (e.target.matches('.doc-type-btn')) {
+                loadDocument(e.target.dataset.docId);
+            }
+        });
+
+        // 监听整个控制面板的输入和变化事件，实时更新预览
+        selectors.mainContentArea.addEventListener('input', updateAll);
+        selectors.mainContentArea.addEventListener('change', updateAll);
+        
+        // 更新预览按钮
+        selectors.previewBtn.addEventListener('click', () => {
+            updateAll();
+            showToast({ message: '预览已更新', type: 'success', duration: 2500 });
+        });
+
+        // 打印按钮
+        selectors.printBtn.addEventListener('click', () => {
+            // 打印前，暂时移除所有预览元素的缩放，确保打印的是原始大小
+            const previewEls = selectors.previewContainer.children;
+            for (const el of previewEls) {
+                if (el) {
+                    el.style.transform = 'none';
+                }
+            }
+
+            updateAll(); // 重新运行更新以确保内容最新
+            showToast({ message: '正在准备打印...', type: 'info', duration: 2500 });
+            
+            setTimeout(() => {
+                window.print();
+                // 打印后，恢复缩放
+                updatePreviewScaling();
+            }, 100);
+        });
     }
 
-    // 5. 更新常规预览
+    // 7. 更新所有预览的入口函数
+    function updateAll() {
+        if (!state.currentUniversityId) return;
+        updateCalculatedFields(); // 首先更新需要计算的字段
+        updatePreview(); // 然后更新所有普通字段
+        updatePreviewScaling(); // 最后调整预览区的缩放
+    }
+
+    // 8. 更新预览 (将表单数据同步到预览区)
     function updatePreview() {
         const inputs = document.querySelectorAll('.control-panel [data-bind-to]');
         inputs.forEach(input => {
@@ -175,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const previewElements = document.querySelectorAll(`[data-preview-id="${bindKey}"]`);
             
             previewElements.forEach(el => {
-                if (input.type === 'file') {
+                if (input.type === 'file') { // 处理文件/图片
                     const imgElement = el;
                     const container = imgElement.parentElement;
                     const placeholder = container?.querySelector('.placeholder');
@@ -193,9 +298,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         imgElement.style.display = 'none';
                         if (placeholder) placeholder.style.display = 'flex';
                     }
-                } else if (input.type === 'date') {
+                } else if (input.type === 'date') { // 处理日期
                     el.textContent = formatDate(input.value);
-                } else {
+                } else { // 处理普通文本
                     const suffix = el.dataset.suffix || '';
                     el.textContent = (input.value || '') + suffix;
                 }
@@ -203,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. 更新计算字段
+    // 9. 更新需要通过计算得出的字段 (如有效期、学年等)
     function updateCalculatedFields() {
         const enrollmentDateVal = document.getElementById('enrollmentDate')?.value;
         const studyPeriod = parseInt(document.getElementById('studyPeriod')?.value, 10);
@@ -234,113 +339,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // 7. 事件绑定
-    function bindFormEvents() {
-        selectors.mainContentArea.addEventListener('input', updateAll);
-        selectors.mainContentArea.addEventListener('change', updateAll);
-    }
+    // 10. 辅助函数区
 
-    selectors.templateSelector.addEventListener('change', (e) => loadTemplate(e.target.value));
-    selectors.documentSelector.addEventListener('click', (e) => {
-        if (e.target.matches('.doc-type-btn')) loadDocument(e.target.dataset.docId);
-    });
-    
-    selectors.previewBtn.addEventListener('click', () => {
-        updateAll();
-        showToast({ message: '预览已更新', type: 'success', duration: 2500 });
-    });
-    selectors.printBtn.addEventListener('click', () => {
-        // --- (*** 已修改 ***) ---
-        // 打印前，暂时移除所有预览元素的缩放，确保打印的是原始大小
-        const previewEls = selectors.previewContainer.children;
-        for (const el of previewEls) {
-            if (el) {
-                // 使用内联样式清除 transform
-                el.style.transform = 'none';
-            }
-        }
-
-        updateAll(); // 重新运行更新以确保内容最新
-        showToast({ message: '正在准备打印...', type: 'info', duration: 2500 });
-        
-        setTimeout(() => {
-            window.print();
-            // 打印后，恢复缩放
-            updatePreviewScaling();
-        }, 100);
-    });
-
-    // 8. 辅助函数
-
-    // --- (*** 已修改 ***) ---
-    // 核心功能：更新预览区的缩放比例
+    // 动态更新预览区的缩放，使其适应容器大小
     function updatePreviewScaling() {
         const area = selectors.previewArea;
         const container = selectors.previewContainer;
-
         if (!container || !area) return;
 
-        // 获取预览容器中所有的直接子元素
         const previewEls = Array.from(container.children);
-        
-        // 如果没有可预览的元素，就直接返回
         if (previewEls.length === 0) return;
 
-        // 检查是否存在占位符文本，如果是，则不进行缩放
         const placeholder = container.querySelector('.placeholder-text');
         if (placeholder) {
             placeholder.style.transform = 'none';
             return;
         }
-
-        // 核心逻辑修改：
-        // 当预览内容只有一个子元素时（例如单个证书），我们采用JS动态计算缩放。
-        // 当有多个子元素时（例如学生证正反面+标题），我们则依赖CSS媒体查询进行响应式缩放，
-        // 此时只需清除JS可能添加的内联transform样式即可。
+        
+        // 核心逻辑：当预览内容只有一个子元素（如证书），通过JS动态计算缩放
+        // 当有多个子元素时（如学生证正反面），清除JS设置的样式，让CSS媒体查询来控制
         if (previewEls.length === 1) {
             const previewEl = previewEls[0];
-            
-            // 先重置 transform，以获取元素的原始（无缩放）尺寸
-            previewEl.style.transform = 'none';
-
+            previewEl.style.transform = 'none'; // 先重置以获取原始尺寸
             const areaWidth = area.clientWidth;
             const areaHeight = area.clientHeight;
-
             const elWidth = previewEl.offsetWidth;
             const elHeight = previewEl.offsetHeight;
 
-            // 如果元素没有尺寸，则不进行计算
             if (elWidth === 0 || elHeight === 0) return;
 
-            // 计算宽度和高度方向上的缩放比例
             const scaleX = areaWidth / elWidth;
             const scaleY = areaHeight / elHeight;
-
-            // 取两个比例中较小的一个，作为最终的缩放比例，以保证整个元素都能被看见
-            // 同时减去一个很小的值 (0.05) 作为边距，避免元素紧贴边缘
-            const scale = Math.min(scaleX, scaleY) - 0.05;
-
-            // 应用计算出的缩放比例
+            const scale = Math.min(scaleX, scaleY) - 0.05; // 取较小比例并留出边距
             previewEl.style.transform = `scale(${scale > 0 ? scale : 1})`;
         } else {
-            // 对于多元素预览（如学生证），清除JS设置的transform，让CSS来控制
             previewEls.forEach(el => {
-                el.style.transform = ''; // 移除内联样式，让CSS规则生效
+                el.style.transform = ''; // 清除内联transform，让CSS生效
             });
         }
     }
 
+    // 重置UI界面
     function resetUI(isTemplateLoading = false) {
         state.currentDocument = null;
         selectors.documentSelector.innerHTML = '';
         selectors.docFormContainer.innerHTML = '';
         if (!isTemplateLoading) {
-            state.currentTemplate = null;
+            state.currentUniversityId = null;
             state.config = null;
-            selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个模板和证件类型</div>';
+            selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个国家和大学</div>';
             selectors.mainContentArea.classList.add('hidden');
             
-            // (*** 已修改 ***) 当我们彻底切换模板时，需要清空"管家"的缓存
+            // 彻底重置时，清空文件输入框的缓存
             state.dynamicInputs = {};
 
             document.querySelectorAll('#common-info-section input, #common-student-section input').forEach(input => {
@@ -353,10 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             removeTemplateCSS();
         }
-        // --- (*** 新增 ***) ---
-        // 重置UI时，也要确保预览缩放被重置
         updatePreviewScaling();
     }
+
+    // 自动填充表单
     function populateForm(container, data) {
         if (!data) return;
         for (const [key, value] of Object.entries(data)) {
@@ -366,17 +416,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    function loadTemplateCSS(templateId) {
+
+    // 加载模板专属CSS
+    function loadTemplateCSS(universityId) { // (*** 修改点 ***) 参数名改为 universityId 更清晰
         removeTemplateCSS();
         const link = document.createElement('link');
         link.id = 'template-styles';
         link.rel = 'stylesheet';
-        link.href = `/templates/${templateId}/style.css`;
+        // (*** 修改点 ***) 构建新的、包含国家和大学层级的路径来加载CSS文件
+        link.href = `/templates/${state.currentCountryId}/${universityId}/style.css`;
         document.head.appendChild(link);
     }
+
+    // 移除模板专属CSS
     function removeTemplateCSS() {
         document.getElementById('template-styles')?.remove();
     }
+
+    // 格式化日期
     function formatDate(date) {
         if (!date) return '';
         const d = (date instanceof Date) ? date : new Date(String(date).replace(/-/g, '/'));
@@ -384,13 +441,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
+    // 为自定义文件上传按钮绑定事件
     function setupCustomFileUploads(container) {
         const fileUploads = container.querySelectorAll('.custom-file-upload');
-        
         fileUploads.forEach(upload => {
             const fileInput = upload.querySelector('input[type="file"]');
             const fileChosenText = upload.querySelector('.file-chosen-text');
-
             if (fileInput && fileChosenText) {
                 fileInput.removeEventListener('change', handleFileChange);
                 fileInput.addEventListener('change', handleFileChange);
@@ -398,6 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 处理文件选择事件
     function handleFileChange() {
         const fileInput = this;
         const parentUpload = fileInput.closest('.custom-file-upload');
@@ -405,12 +462,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (fileInput.files && fileInput.files.length > 0) {
             fileChosenText.textContent = fileInput.files[0].name;
-            
             const bindKey = fileInput.dataset.bindTo;
             const isLogo = bindKey === 'logo';
             const toastMessage = isLogo ? '学校Logo已更新' : '学生照片已更新';
             showToast({ message: toastMessage, type: 'info', duration: 2500 });
-
         } else {
             fileChosenText.textContent = '未选择文件';
         }
