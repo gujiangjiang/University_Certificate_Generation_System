@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         currentTemplate: null,
         currentDocument: null,
-        config: null, // 用于存储加载的模板配置
+        config: null,
     };
 
     const selectors = {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             bindFormEvents();
-            setupCustomFileUploads(document.body); // (*** 修改 ***) 初始化页面上已有的自定义上传按钮
+            setupCustomFileUploads(document.body);
 
         } catch (error) {
             console.error('初始化失败:', error);
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectors.docFormContainer.innerHTML = doc.getElementById('form-snippet')?.innerHTML || '';
             selectors.previewContainer.innerHTML = doc.getElementById('preview-snippet')?.innerHTML || '';
             
-            setupCustomFileUploads(selectors.docFormContainer); // (*** 新增 ***) 每次加载新表单后，都重新初始化上传按钮
+            setupCustomFileUploads(selectors.docFormContainer);
 
             if (state.config.documents[docId]?.defaults) {
                 populateForm(selectors.docFormContainer, state.config.documents[docId].defaults);
@@ -152,10 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const placeholder = container?.querySelector('.placeholder');
 
                     if (input.files && input.files[0]) {
-                        const isLogo = bindKey === 'logo';
-                        const toastMessage = isLogo ? '学校Logo已更新' : '学生照片已更新';
-                        showToast({ message: toastMessage, type: 'info', duration: 2500 });
-                        
+                        // (*** 已修改 ***) 核心修复：移除此处的 Toast 提示
                         const reader = new FileReader();
                         reader.onload = e => {
                             imgElement.src = e.target.result;
@@ -278,31 +275,43 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    // (*** 新增函数 ***) 通用化设置美化文件上传按钮的功能
+    // (*** 已修改 ***) 通用化设置美化文件上传按钮的功能
     function setupCustomFileUploads(container) {
-        // 1. 在指定的容器内查找所有自定义文件上传组件
         const fileUploads = container.querySelectorAll('.custom-file-upload');
         
-        // 2. 遍历找到的每个组件
         fileUploads.forEach(upload => {
-            // 3. 在组件内部找到文件输入框和用于显示文件名的文本元素
             const fileInput = upload.querySelector('input[type="file"]');
             const fileChosenText = upload.querySelector('.file-chosen-text');
 
-            // 4. 如果找到了这两个元素
             if (fileInput && fileChosenText) {
-                // 5. 为文件输入框添加 'change' 事件监听
-                fileInput.addEventListener('change', function() {
-                    // 6. 当用户选择文件后，更新文本内容
-                    if (this.files && this.files.length > 0) {
-                        fileChosenText.textContent = this.files[0].name;
-                    } else {
-                        // 7. 如果用户取消选择，则恢复默认文本
-                        fileChosenText.textContent = '未选择文件';
-                    }
-                });
+                // 为避免重复绑定，先移除旧的监听器 (这是一个好习惯)
+                fileInput.removeEventListener('change', handleFileChange);
+                // 重新添加事件监听器
+                fileInput.addEventListener('change', handleFileChange);
             }
         });
+    }
+
+    // (*** 新增函数 ***) 创建一个独立的事件处理函数
+    function handleFileChange() {
+        // 'this' 在这里指向触发事件的 fileInput 元素
+        const fileInput = this;
+        const parentUpload = fileInput.closest('.custom-file-upload');
+        const fileChosenText = parentUpload.querySelector('.file-chosen-text');
+
+        if (fileInput.files && fileInput.files.length > 0) {
+            fileChosenText.textContent = fileInput.files[0].name;
+            
+            // (*** 已修改 ***) 核心修复：将 Toast 提示逻辑移到这里
+            // 这是唯一能确保只在用户选择文件时触发的地方
+            const bindKey = fileInput.dataset.bindTo;
+            const isLogo = bindKey === 'logo';
+            const toastMessage = isLogo ? '学校Logo已更新' : '学生照片已更新';
+            showToast({ message: toastMessage, type: 'info', duration: 2500 });
+
+        } else {
+            fileChosenText.textContent = '未选择文件';
+        }
     }
 
     // 启动应用
