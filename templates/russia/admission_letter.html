@@ -9,40 +9,12 @@
         <input type="date" id="admissionDate" data-bind-to="admissionDate" value="2024-07-15">
     </div>
     <div class="form-group">
-        <label for="studentName">学生姓名</label>
-        <input type="text" id="studentName" data-bind-to="studentName" value="Иванов Иван Иванович">
-    </div>
-    <div class="form-group">
-        <label for="passportNumber">护照号</label>
-        <input type="text" id="passportNumber" data-bind-to="passportNumber" value="A1234567">
-    </div>
-    <div class="form-group">
-        <label for="studentId">学号</label>
-        <input type="text" id="studentId" data-bind-to="studentId" value="2024091234">
-    </div>
-    <div class="form-group">
-        <label for="faculty">院系</label>
-        <input type="text" id="faculty" data-bind-to="faculty" value="Факультет информационных технологий">
-    </div>
-    <div class="form-group">
-        <label for="specialty">专业</label>
-        <input type="text" id="specialty" data-bind-to="specialty" value="Компьютерные науки">
-    </div>
-    <div class="form-group">
         <label for="educationLevel">教育层次</label>
         <select id="educationLevel" data-bind-to="educationLevel">
             <option value="бакалавриат">бакалавриат</option>
             <option value="магистратура">магистратура</option>
             <option value="докторантура">докторантура</option>
         </select>
-    </div>
-    <div class="form-group">
-        <label for="studyPeriod">学习年限 (年)</label>
-        <input type="text" id="studyPeriod" data-bind-to="studyPeriod" value="4">
-    </div>
-    <div class="form-group">
-        <label for="academicYear">学年</label>
-        <input type="text" id="academicYear" data-bind-to="academicYear" value="2024-2025">
     </div>
     <div class="form-group">
         <label for="deanName">院长姓名</label>
@@ -62,7 +34,7 @@
                         <text x="50" y="58" font-family="-apple-system, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#4a5568">LOGO</text>
                     </svg>
                 </div>
-                </div>
+            </div>
             <div class="university-name-display" data-preview-id="universityName">ПАМИР УНИВЕРСИТЕТ</div>
             <div class="university-name-en-display" data-preview-id="universityNameEn">PAMIR UNIVERSITY</div>
         </div>
@@ -72,23 +44,23 @@
             <span data-preview-id="admissionDate">2024-07-15</span>
             
             <div class="student-info">
-                <div class="info-row"><div class="info-label">ФИО студента:</div><div class="info-value" data-preview-id="studentName">Иванов Иван Иванович</div></div>
-                <div class="info-row"><div class="info-label">Номер паспорта:</div><div class="info-value" data-preview-id="passportNumber">A1234567</div></div>
-                <div class="info-row"><div class="info-label">Номер студента:</div><div class="info-value" data-preview-id="studentId">2024091234</div></div>
-                <div class="info-row"><div class="info-label">Факультет:</div><div class="info-value" data-preview-id="faculty">Факультет информационных технологий</div></div>
-                <div class="info-row"><div class="info-label">Специальность:</div><div class="info-value" data-preview-id="specialty">Компьютерные науки</div></div>
-                <div class="info-row"><div class="info-label">Уровень образования:</div><div class="info-value" data-preview-id="educationLevel">бакалавриат</div></div>
-                <div class="info-row"><div class="info-label">Срок обучения:</div><div class="info-value" data-preview-id="studyPeriod" data-suffix=" года">4 года</div></div>
-                <div class="info-row"><div class="info-label">Учебный год:</div><div class="info-value" data-preview-id="academicYear">2024-2025</div></div>
+                <div class="info-row"><div class="info-label">ФИО студента:</div><div class="info-value" data-preview-id="studentName"></div></div>
+                <div class="info-row"><div class="info-label">Номер паспорта:</div><div class="info-value" data-preview-id="passportNumber"></div></div>
+                <div class="info-row"><div class="info-label">Номер студента:</div><div class="info-value" data-preview-id="studentId"></div></div>
+                <div class="info-row"><div class="info-label">Факультет:</div><div class="info-value" data-preview-id="faculty"></div></div>
+                <div class="info-row"><div class="info-label">Специальность:</div><div class="info-value" data-preview-id="specialty"></div></div>
+                <div class="info-row"><div class="info-label">Уровень образования:</div><div class="info-value" data-preview-id="educationLevel"></div></div>
+                <div class="info-row"><div class="info-label">Срок обучения:</div><div class="info-value" data-preview-id="studyPeriod" data-suffix=" года"></div></div>
+                <div class="info-row"><div class="info-label">Учебный год:</div><div class="info-value" data-preview-id="academicYear"></div></div>
             </div>
             <p>
-                Уведомляем Вас, что Вы успешно зачислены в Памир Университет 
-                в <span data-preview-id="educationLevel">бакалавриат</span> на специальность 
-                "<span data-preview-id="specialty">Компьютерные науки</span>" 
-                на <span data-preview-id="studyPeriod">4</span>-летний срок обучения.
+                Уведомляем Вас, что Вы успешно зачислены в <span data-preview-id="universityName"></span> 
+                в <span data-preview-id="educationLevel"></span> на специальность 
+                "<span data-preview-id="specialty"></span>" 
+                на <span data-preview-id="studyPeriod"></span>-летний срок обучения.
             </p>
             <p>
-                Начало занятий: 1 сентября <span data-preview-id="academicYear">2024</span> года.
+                Начало занятий: 1 сентября <span data-preview-id="academicYear"></span> года.
                 Просим прибыть в университет в установленные сроки с необходимыми документами.
             </p>
             <p>
@@ -101,12 +73,12 @@
                 <div class="signature-block">
                     <div class="signature-line"></div>
                     <div class="signature-title">Декан факультета</div>
-                    <div data-preview-id="deanName">Петров Петр Петрович</div>
+                    <div data-preview-id="deanName"></div>
                 </div>
                 <div class="signature-block">
                     <div class="signature-line"></div>
                     <div class="signature-title">Дата</div>
-                    <div data-preview-id="admissionDate">2024-07-15</div>
+                    <div data-preview-id="admissionDate"></div>
                 </div>
             </div>
         </div>

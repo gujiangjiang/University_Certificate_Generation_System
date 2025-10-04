@@ -8,37 +8,12 @@
         <label for="studentPhoto">学生照片</label>
         <input type="file" id="studentPhoto" accept="image/*" data-bind-to="studentPhoto">
     </div>
-    <h3 class="form-section-title" style="font-size: 16px; border: none; margin-top: 10px;">正面信息</h3>
-    <div class="form-group">
-        <label for="studentName">学生姓名</label>
-        <input type="text" id="studentName" data-bind-to="studentName" value="Ryan Van">
-    </div>
-    <div class="form-group">
-        <label for="studentId">学生证号</label>
-        <input type="text" id="studentId" data-bind-to="studentId" value="INT140639">
-    </div>
-    <div class="form-group">
-        <label for="faculty">院系</label>
-        <input type="text" id="faculty" data-bind-to="faculty" value="Faculty of Physics">
-    </div>
-    <div class="form-group">
-        <label for="issueDate">签发日期</label>
-        <input type="date" id="issueDate" data-bind-to="issueDate" value="2023-11-12">
-    </div>
-    <div class="form-group">
-        <label for="validDate">有效期至</label>
-        <input type="date" id="validDate" data-bind-to="validDate" value="2027-11-12">
-    </div>
     <h3 class="form-section-title" style="font-size: 16px; border: none; margin-top: 10px;">背面信息</h3>
     <div class="form-group">
         <label for="address">地址</label>
         <input type="text" id="address" data-bind-to="address" value="Chui Avenue 720, Bishkek 720001">
     </div>
-     <div class="form-group">
-        <label for="notice">注意事项</label>
-        <textarea id="notice" data-bind-to="notice">Эта карта является собственностью университета и должна быть возвращена по требованию. В случае находки, пожалуйста, верните в ближайший офис университета.</textarea>
     </div>
-</div>
 
 <div id="preview-snippet">
     <div class="preview-title">学生证预览 - 正面</div>
@@ -52,10 +27,10 @@
                         <text x="50" y="58" font-family="-apple-system, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#4a5568">LOGO</text>
                     </svg>
                 </div>
-                </div>
+            </div>
             <div class="header-text">
-                <div class="university-name-display" data-preview-id="universityName">Памир Университети</div>
-                <div class="card-subtitle" data-preview-id="cardSubtitle">МЕЖДУНАРОДНЫЙ СТУДЕНЧЕСКИЙ БИЛЕТ</div>
+                <div class="university-name-display" data-preview-id="universityName"></div>
+                <div class="card-subtitle" data-preview-id="cardSubtitle"></div>
             </div>
         </div>
         <div class="card-body">
@@ -64,14 +39,14 @@
                 <div class="placeholder">学生照片<br>3x4</div>
             </div>
             <div class="info-section">
-                <div class="info-group"><div class="info-label">ИМЯ</div><div class="info-value" data-preview-id="studentName">Ryan Van</div></div>
-                <div class="info-group"><div class="info-label">НОМЕР СТУДЕНТА</div><div class="info-value" data-preview-id="studentId">INT140639</div></div>
-                <div class="info-group"><div class="info-label">ФАКУЛЬТЕТ</div><div class="info-value" data-preview-id="faculty">Faculty of Physics</div></div>
+                <div class="info-group"><div class="info-label">ИМЯ</div><div class="info-value" data-preview-id="studentName"></div></div>
+                <div class="info-group"><div class="info-label">НОМЕР СТУДЕНТА</div><div class="info-value" data-preview-id="studentId"></div></div>
+                <div class="info-group"><div class="info-label">ФАКУЛЬТЕТ</div><div class="info-value" data-preview-id="faculty"></div></div>
             </div>
         </div>
         <div class="card-footer">
-            <div class="date-group"><div class="date-label">ДАТА ВЫДАЧИ</div><div class="date-value" data-preview-id="issueDate">2023-11-12</div></div>
-            <div class="date-group"><div class="date-label">ДЕЙСТВИТЕЛЕН ДО</div><div class="date-value" data-preview-id="validDate">2027-11-12</div></div>
+            <div class="date-group"><div class="date-label">ДАТА ВЫДАЧИ</div><div class="date-value" data-preview-id="issueDate"></div></div>
+            <div class="date-group"><div class="date-label">ДЕЙСТВИТЕЛЕН ДО</div><div class="date-value" data-preview-id="validDate"></div></div>
         </div>
     </div>
     <div class="preview-title">学生证预览 - 背面</div>
@@ -79,12 +54,12 @@
         <div class="black-bar"></div>
         <div class="content">
             <div class="address-section">
-                <div class="section-title">АДРЕС ВЛАДЕЛЬЦА</div><div class="address-text" data-preview-id="address">Chui Avenue 720, Bishkek 720001</div>
+                <div class="section-title">АДРЕС ВЛАДЕЛЬЦА</div><div class="address-text" data-preview-id="address"></div>
             </div>
-            <div class="notice-text" data-preview-id="notice">Эта карта является собственностью университета и должна быть возвращена по требованию...</div>
+            <div class="notice-text" data-preview-id="notice"></div>
             <div class="back-signature-section">
                 <div class="signature-area">
-                    <div class="signature-text" data-preview-id="studentName">Ryan Van</div>
+                    <div class="signature-text" data-preview-id="studentName"></div>
                     <div class="signature-label">Подпись владельца</div>
                 </div>
                 <div class="back-logo">
@@ -95,7 +70,7 @@
                             <text x="50" y="58" font-family="-apple-system, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#4a5568">LOGO</text>
                         </svg>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
     </div>
