@@ -419,7 +419,7 @@
     width: 500px;
 }
 
-/* --- 打印样式修正 (最终版) --- */
+/* --- 打印样式修正 (最终完美版) --- */
 @media print {
     /* 隐藏预览时的标题，打印时不需要。使用更高优先级的选择器。 */
     #preview-container > .preview-title {
@@ -434,6 +434,10 @@
         margin: 20px auto !important; /* 居中并添加垂直间距 */
         box-shadow: none !important; /* 移除阴影 */
         page-break-inside: avoid !important; /* 防止卡片在页面中断开 */
+        
+        /* --- 新增代码：强制保留圆角和内容裁剪 --- */
+        border-radius: 16px !important; /* 强制打印圆角 */
+        overflow: hidden !important; /* 强制隐藏溢出内容，配合圆角使用 */
     }
 
     /* 确保卡片背景色能被打印（某些浏览器默认不打印背景） */
