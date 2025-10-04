@@ -11,6 +11,8 @@
     position: relative;
     font-family: 'Times New Roman', serif;
     box-sizing: border-box;
+    /* 新增：确保在打印时高度是自动的，避免内容溢出 */
+    height: auto; 
 }
 
 .certificate-border {
@@ -23,16 +25,20 @@
     pointer-events: none;
 }
 
+/* 修复在读证明的布局问题 */
 .enrollment-certificate.certificate {
-    height: 297mm;
+    /* 修改：将固定高度改为最小高度，让内容自然撑开 */
+    min-height: 297mm; 
     display: flex;
     flex-direction: column;
 }
 .enrollment-certificate .certificate-body {
-    flex-grow: 1;
+    /* 修改：让正文部分占据尽可能多的空间，将页脚推到底部 */
+    flex-grow: 1; 
 }
 .enrollment-certificate .seal-section {
-    flex-shrink: 0;
+    /* 修改：确保页脚部分不伸缩，保持原有大小 */
+    flex-shrink: 0; 
 }
 
 
@@ -130,6 +136,11 @@
     margin-bottom: 15px;
     text-indent: 2em;
 }
+/* 新增：为录取通知书专门设置一个高度，确保打印时正好为一页A4 */
+.admission-letter.certificate {
+    height: 297mm;
+}
+
 
 /* 在读证明专属样式 */
 .enrollment-certificate .certificate-header {
@@ -303,7 +314,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 2px;
-    font-weight: normal; 
+    font-weight: normal;
     line-height: 1.1;
 }
 .student-card .info-value {
@@ -428,6 +439,19 @@
 
 /* --- 打印样式修正 --- */
 @media print {
+    /* 修复：添加page指令来更好地控制打印布局 */
+    @page {
+        size: A4;
+        margin: 0;
+    }
+    /* 修复：确保body和html没有多余的边距和填充 */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 210mm;
+        height: 297mm;
+    }
+    
     #preview-container > .preview-title {
         display: none !important;
     }
@@ -452,6 +476,13 @@
     .student-card, .card-front .header, .card-body, .card-back .black-bar {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+    /* 修复：移除在打印视图下的缩放，直接使用原始尺寸 */
+    .certificate {
+        transform: scale(1) !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        page-break-after: always; /* 确保每个证书后都分页 */
     }
 }
 
