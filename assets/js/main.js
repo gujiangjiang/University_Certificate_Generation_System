@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTemplate: null,
         currentDocument: null,
         config: null,
+        // (*** 新增 ***) "管家"对象：用于缓存需要跨页面保留状态的动态输入框
+        dynamicInputs: {}, 
     };
 
     const selectors = {
@@ -96,6 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 加载文档
     async function loadDocument(docId) {
         if (state.currentDocument === docId && selectors.docFormContainer.innerHTML !== '') return;
+        
+        // (*** 已修改 ***) 核心修复：在移除旧表单前，让"管家"记住里面的文件输入框
+        selectors.docFormContainer.querySelectorAll('input[type="file"]').forEach(input => {
+            // 只有当用户确实选择了文件时，才进行缓存
+            if (input.files && input.files.length > 0) {
+                state.dynamicInputs[input.id] = input;
+            }
+        });
+
         state.currentDocument = docId;
 
         document.querySelectorAll('.doc-type-btn').forEach(btn => {
@@ -113,6 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
             selectors.docFormContainer.innerHTML = doc.getElementById('form-snippet')?.innerHTML || '';
             selectors.previewContainer.innerHTML = doc.getElementById('preview-snippet')?.innerHTML || '';
             
+            // (*** 已修改 ***) 核心修复：加载新表单后，检查"管家"有没有存货
+            selectors.docFormContainer.querySelectorAll('input[type="file"]').forEach(newInput => {
+                // 如果管家记住了这个ID的输入框，就用缓存的旧框替换掉新的空框
+                if (state.dynamicInputs[newInput.id]) {
+                    newInput.parentNode.replaceChild(state.dynamicInputs[newInput.id], newInput);
+                }
+            });
+
             setupCustomFileUploads(selectors.docFormContainer);
 
             if (state.config.documents[docId]?.defaults) {
@@ -152,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const placeholder = container?.querySelector('.placeholder');
 
                     if (input.files && input.files[0]) {
-                        // (*** 已修改 ***) 核心修复：移除此处的 Toast 提示
                         const reader = new FileReader();
                         reader.onload = e => {
                             imgElement.src = e.target.result;
@@ -237,6 +255,10 @@ document.addEventListener('DOMContentLoaded', () => {
             state.config = null;
             selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个模板和证件类型</div>';
             selectors.mainContentArea.classList.add('hidden');
+            
+            // (*** 已修改 ***) 当我们彻底切换模板时，需要清空"管家"的缓存
+            state.dynamicInputs = {};
+
             document.querySelectorAll('#common-info-section input, #common-student-section input').forEach(input => {
                 if (input.type === 'file') {
                     const newInput = input.cloneNode(true);
@@ -275,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    // (*** 已修改 ***) 通用化设置美化文件上传按钮的功能
     function setupCustomFileUploads(container) {
         const fileUploads = container.querySelectorAll('.custom-file-upload');
         
@@ -284,17 +305,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileChosenText = upload.querySelector('.file-chosen-text');
 
             if (fileInput && fileChosenText) {
-                // 为避免重复绑定，先移除旧的监听器 (这是一个好习惯)
                 fileInput.removeEventListener('change', handleFileChange);
-                // 重新添加事件监听器
                 fileInput.addEventListener('change', handleFileChange);
             }
         });
     }
 
-    // (*** 新增函数 ***) 创建一个独立的事件处理函数
     function handleFileChange() {
-        // 'this' 在这里指向触发事件的 fileInput 元素
         const fileInput = this;
         const parentUpload = fileInput.closest('.custom-file-upload');
         const fileChosenText = parentUpload.querySelector('.file-chosen-text');
@@ -302,8 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fileInput.files && fileInput.files.length > 0) {
             fileChosenText.textContent = fileInput.files[0].name;
             
-            // (*** 已修改 ***) 核心修复：将 Toast 提示逻辑移到这里
-            // 这是唯一能确保只在用户选择文件时触发的地方
             const bindKey = fileInput.dataset.bindTo;
             const isLogo = bindKey === 'logo';
             const toastMessage = isLogo ? '学校Logo已更新' : '学生照片已更新';
