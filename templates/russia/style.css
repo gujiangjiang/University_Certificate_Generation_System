@@ -218,11 +218,13 @@
     overflow: hidden;
     position: relative;
 }
+/* --- 修改开始 --- */
 .logo-container img {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
+    width: 100%; /* 修改：让图片宽度填满圆形容器 */
+    height: 100%; /* 修改：让图片高度填满圆形容器 */
+    object-fit: cover; /* 修改：使用cover模式裁剪图片以填充，确保不变形 */
 }
+/* --- 修改结束 --- */
 .logo-container .placeholder {
     width: 100%;
     height: 100%;
@@ -385,16 +387,20 @@
     font-size: 10px;
     color: #999;
 }
+/* --- 修改开始 --- */
 .back-logo {
     width: 60px;
     height: 60px;
     position: relative;
+    border-radius: 50%; /* 新增：将容器设置为圆形 */
+    overflow: hidden; /* 新增：隐藏超出圆形容器的内容 */
 }
 .back-logo img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover; /* 修改：使用cover模式裁剪图片以填充，确保不变形 */
 }
+/* --- 修改结束 --- */
 .back-logo .placeholder {
     width: 100%;
     height: 100%;
