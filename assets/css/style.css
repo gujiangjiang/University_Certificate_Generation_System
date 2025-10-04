@@ -149,9 +149,9 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
 }
 
+/* 注意：我们将隐藏原生的文件上传按钮 */
 input[type="file"] {
-    font-size: 12px;
-    padding: 8px;
+    display: none;
 }
 
 textarea {
@@ -275,4 +275,54 @@ button {
         min-height: 500px; /* 保证预览区有足够高度 */
         overflow-x: hidden; /* 防止缩放后依然有横向滚动条 */
     }
+}
+
+
+/* --- (*** 新增 ***) 优化 Safari 及其他浏览器下的下拉框样式 --- */
+select {
+    -webkit-appearance: none; /* 移除 Safari/Chrome 的原生样式 */
+    -moz-appearance: none;    /* 移除 Firefox 的原生样式 */
+    appearance: none;         /* 移除标准的原生样式 */
+    /* 使用内联 SVG 自定义箭头图标，增强兼容性并减少外部依赖 */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-13%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2013l128%20127.9c3.6%203.6%207.8%205.4%2013%205.4s9.4-1.8%2013-5.4L287%2095.2c3.6-3.7%205.4-8%205.4-13%200-5-1.8-9.2-5.4-12.8z%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+    padding-right: 30px; /* 为箭头图标留出空间，防止文字遮挡 */
+}
+
+/* --- (*** 新增 ***) 优化文件选择按钮样式 --- */
+.custom-file-upload {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 自定义的文件上传按钮样式 (通过 label 实现) */
+.btn-file-upload {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 6px;
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    white-space: nowrap; /* 防止文字换行 */
+}
+
+.btn-file-upload:hover {
+    background-color: #5a6268; /* 鼠标悬浮时加深颜色 */
+}
+
+/* 用于显示所选文件名的文本样式 (*** 使用 class 选择器 ***) */
+.file-chosen-text {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #6c757d;
+    white-space: nowrap; /* 防止文件名换行 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 文件名过长时显示省略号 */
+    max-width: 180px; /* 限制最大宽度，避免撑开布局 */
 }

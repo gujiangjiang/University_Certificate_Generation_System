@@ -6,7 +6,11 @@
     </div>
     <div class="form-group">
         <label for="studentPhoto">学生照片</label>
-        <input type="file" id="studentPhoto" accept="image/*" data-bind-to="studentPhoto">
+        <div class="custom-file-upload">
+            <label for="studentPhoto" class="btn-file-upload">选择文件</label>
+            <input type="file" id="studentPhoto" accept="image/*" data-bind-to="studentPhoto">
+            <span class="file-chosen-text">未选择文件</span>
+        </div>
     </div>
     <h3 class="form-section-title" style="font-size: 16px; border: none; margin-top: 10px;">背面信息</h3>
     <div class="form-group">

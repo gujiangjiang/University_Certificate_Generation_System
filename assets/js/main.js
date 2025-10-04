@@ -18,11 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. 初始化
     async function initialize() {
         try {
-            // --- 新增：页面加载时显示风险提醒Toast ---
             showToast({
                 message: '<strong>风险提醒：</strong>本工具仅供学习和技术测试使用，请勿用于非法用途。使用本工具造成的任何后果由使用者自行承担。',
                 type: 'warning',
-                persistent: true // 使其一直显示，直到用户手动关闭
+                persistent: true
             });
 
             const response = await fetch('/templates/manifest.json');
@@ -34,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             bindFormEvents();
+            setupCustomFileUploads(document.body); // (*** 修改 ***) 初始化页面上已有的自定义上传按钮
+
         } catch (error) {
             console.error('初始化失败:', error);
             showToast({ message: `初始化失败: ${error.message}`, type: 'warning' });
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. 加载模板 (核心重构)
+    // 2. 加载模板
     async function loadTemplate(templateId) {
         if (!templateId) {
             resetUI();
@@ -53,23 +54,20 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`/templates/${templateId}/config.json`);
             if (!response.ok) throw new Error('无法加载 config.json');
-            state.config = await response.json(); // 保存配置
+            state.config = await response.json();
 
-            // 使用配置填充通用表单
             populateForm(document.body, state.config.universityInfo);
             populateForm(document.body, state.config.studentInfoDefaults);
 
             loadTemplateCSS(templateId);
             selectors.mainContentArea.classList.remove('hidden');
 
-            // --- 新增：选择模板后显示Toast ---
             const selectedTemplateName = selectors.templateSelector.options[selectors.templateSelector.selectedIndex].text;
             showToast({
                 message: `已选择模板：${selectedTemplateName}。<br>请完善信息后选择证件类型。`,
                 type: 'success'
             });
 
-            // 创建文档选择按钮
             selectors.documentSelector.innerHTML = '';
             for (const [docId, docInfo] of Object.entries(state.config.documents)) {
                 if (docInfo.available) {
@@ -95,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // 3. 加载文档 (核心重构)
+    // 3. 加载文档
     async function loadDocument(docId) {
         if (state.currentDocument === docId && selectors.docFormContainer.innerHTML !== '') return;
         state.currentDocument = docId;
@@ -114,6 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             selectors.docFormContainer.innerHTML = doc.getElementById('form-snippet')?.innerHTML || '';
             selectors.previewContainer.innerHTML = doc.getElementById('preview-snippet')?.innerHTML || '';
+            
+            setupCustomFileUploads(selectors.docFormContainer); // (*** 新增 ***) 每次加载新表单后，都重新初始化上传按钮
 
             if (state.config.documents[docId]?.defaults) {
                 populateForm(selectors.docFormContainer, state.config.documents[docId].defaults);
@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             updateAll();
 
-            // --- 新增：选择证件后显示Toast ---
             const docName = state.config.documents[docId].name;
             showToast({ message: `已生成 ${docName} 预览。`, type: 'info' });
 
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ... (updateAll, updatePreview, updateCalculatedFields 函数保持不变) ...
     // 4. 更新所有预览
     function updateAll() {
         if (!state.currentTemplate) return;
@@ -154,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const placeholder = container?.querySelector('.placeholder');
 
                     if (input.files && input.files[0]) {
-                        // --- 新增：上传图片时显示Toast ---
                         const isLogo = bindKey === 'logo';
                         const toastMessage = isLogo ? '学校Logo已更新' : '学生照片已更新';
                         showToast({ message: toastMessage, type: 'info', duration: 2500 });
@@ -212,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // 7. 事件绑定 (逻辑简化)
+    // 7. 事件绑定
     function bindFormEvents() {
         selectors.mainContentArea.addEventListener('input', updateAll);
         selectors.mainContentArea.addEventListener('change', updateAll);
@@ -223,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.matches('.doc-type-btn')) loadDocument(e.target.dataset.docId);
     });
     
-    // --- 修改点：为按钮点击添加Toast ---
     selectors.previewBtn.addEventListener('click', () => {
         updateAll();
         showToast({ message: '预览已更新', type: 'success', duration: 2500 });
@@ -231,10 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
     selectors.printBtn.addEventListener('click', () => {
         updateAll();
         showToast({ message: '正在准备打印...', type: 'info', duration: 2500 });
-        setTimeout(() => window.print(), 100); // 延迟一点以确保toast可见
+        setTimeout(() => window.print(), 100);
     });
 
-    // ... (resetUI, populateForm, loadTemplateCSS, removeTemplateCSS, formatDate 函数保持不变) ...
     // 8. 辅助函数
     function resetUI(isTemplateLoading = false) {
         state.currentDocument = null;
@@ -281,6 +276,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const d = (date instanceof Date) ? date : new Date(String(date).replace(/-/g, '/'));
         if (isNaN(d)) return '';
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    // (*** 新增函数 ***) 通用化设置美化文件上传按钮的功能
+    function setupCustomFileUploads(container) {
+        // 1. 在指定的容器内查找所有自定义文件上传组件
+        const fileUploads = container.querySelectorAll('.custom-file-upload');
+        
+        // 2. 遍历找到的每个组件
+        fileUploads.forEach(upload => {
+            // 3. 在组件内部找到文件输入框和用于显示文件名的文本元素
+            const fileInput = upload.querySelector('input[type="file"]');
+            const fileChosenText = upload.querySelector('.file-chosen-text');
+
+            // 4. 如果找到了这两个元素
+            if (fileInput && fileChosenText) {
+                // 5. 为文件输入框添加 'change' 事件监听
+                fileInput.addEventListener('change', function() {
+                    // 6. 当用户选择文件后，更新文本内容
+                    if (this.files && this.files.length > 0) {
+                        fileChosenText.textContent = this.files[0].name;
+                    } else {
+                        // 7. 如果用户取消选择，则恢复默认文本
+                        fileChosenText.textContent = '未选择文件';
+                    }
+                });
+            }
+        });
     }
 
     // 启动应用

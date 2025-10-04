@@ -36,7 +36,11 @@
                     </div>
                     <div class="form-group">
                         <label for="universityLogo">大学校徽</label>
-                        <input type="file" id="universityLogo" accept="image/*" data-bind-to="logo">
+                        <div class="custom-file-upload">
+                            <label for="universityLogo" class="btn-file-upload">选择文件</label>
+                            <input type="file" id="universityLogo" accept="image/*" data-bind-to="logo">
+                            <span class="file-chosen-text">未选择文件</span>
+                        </div>
                     </div>
                 </div>
 
