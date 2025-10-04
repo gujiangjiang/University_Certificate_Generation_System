@@ -20,65 +20,71 @@
                 </select>
             </div>
 
-            <div class="form-separator"></div>
+            <div id="main-content-area" class="hidden">
+                <div class="form-separator"></div>
 
-            <div id="common-info-section" class="form-section hidden">
-                <h2 class="form-section-title">通用大学信息</h2>
-                <div class="form-group">
-                    <label for="universityName">大学名称 (本地语言)</label>
-                    <input type="text" id="universityName" data-bind-to="universityName">
+                <div id="common-info-section" class="form-section">
+                    <h2 class="form-section-title">通用大学信息</h2>
+                    <div class="form-group">
+                        <label for="universityName">大学名称 (本地语言)</label>
+                        <input type="text" id="universityName" data-bind-to="universityName">
+                    </div>
+                    <div class="form-group">
+                        <label for="universityNameEn">University Name (EN)</label>
+                        <input type="text" id="universityNameEn" data-bind-to="universityNameEn">
+                    </div>
+                    <div class="form-group">
+                        <label for="universityLogo">大学校徽</label>
+                        <input type="file" id="universityLogo" accept="image/*" data-bind-to="logo">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="universityNameEn">University Name (EN)</label>
-                    <input type="text" id="universityNameEn" data-bind-to="universityNameEn">
+
+                <div id="common-student-section" class="form-section">
+                    <h2 class="form-section-title">通用学生信息</h2>
+                    <div class="form-group">
+                        <label for="studentName">学生姓名</label>
+                        <input type="text" id="studentName" data-bind-to="studentName">
+                    </div>
+                    <div class="form-group">
+                        <label for="passportNumber">护照号</label>
+                        <input type="text" id="passportNumber" data-bind-to="passportNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">学号 / 学生证号</label>
+                        <input type="text" id="studentId" data-bind-to="studentId">
+                    </div>
+                    <div class="form-group">
+                        <label for="faculty">院系</label>
+                        <input type="text" id="faculty" data-bind-to="faculty">
+                    </div>
+                    <div class="form-group">
+                        <label for="specialty">专业</label>
+                        <input type="text" id="specialty" data-bind-to="specialty">
+                    </div>
+                    <div class="form-group">
+                        <label for="enrollmentDate">入学日期</label>
+                        <input type="date" id="enrollmentDate" data-bind-to="enrollmentDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="studyPeriod">学习年限 (年)</label>
+                        <input type="text" id="studyPeriod" data-bind-to="studyPeriod">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="universityLogo">大学校徽</label>
-                    <input type="file" id="universityLogo" accept="image/*" data-bind-to="logo">
+
+                <div class="form-separator"></div>
+                
+                <div id="document-selector" class="document-selector"></div>
+                
+                <div id="document-form-container"></div>
+
+                <div id="action-buttons" class="button-group">
+                    <button class="btn-primary" id="preview-btn">更新预览</button>
+                    <button class="btn-success" id="print-btn">打印</button>
                 </div>
             </div>
-
-            <div id="common-student-section" class="form-section hidden">
-                <h2 class="form-section-title">通用学生信息</h2>
-                <div class="form-group">
-                    <label for="studentName">学生姓名</label>
-                    <input type="text" id="studentName" data-bind-to="studentName">
-                </div>
-                <div class="form-group">
-                    <label for="passportNumber">护照号</label>
-                    <input type="text" id="passportNumber" data-bind-to="passportNumber">
-                </div>
-                <div class="form-group">
-                    <label for="studentId">学号 / 学生证号</label>
-                    <input type="text" id="studentId" data-bind-to="studentId">
-                </div>
-                <div class="form-group">
-                    <label for="faculty">院系</label>
-                    <input type="text" id="faculty" data-bind-to="faculty">
-                </div>
-                <div class="form-group">
-                    <label for="specialty">专业</label>
-                    <input type="text" id="specialty" data-bind-to="specialty">
-                </div>
-                <div class="form-group">
-                    <label for="enrollmentDate">入学日期</label>
-                    <input type="date" id="enrollmentDate" data-bind-to="enrollmentDate">
-                </div>
-                <div class="form-group">
-                    <label for="studyPeriod">学习年限 (年)</label>
-                    <input type="text" id="studyPeriod" data-bind-to="studyPeriod">
-                </div>
-            </div>
-
-            <div class="form-separator"></div>
-            
-            <div id="document-selector" class="document-selector"></div>
-            
-            <div id="document-form-container"></div>
-
-            <div id="action-buttons" class="button-group hidden">
-                <button class="btn-primary" id="preview-btn">更新预览</button>
-                <button class="btn-success" id="print-btn">打印</button>
+            <div class="disclaimer">
+                <p><strong>风险提醒：</strong></p>
+                <p>本工具仅供学习和技术测试使用，请勿用于任何非法用途。任何通过使用本工具生成的文档而导致的法律纠纷或不良后果，均由使用者自行承担，与本工具作者无关。</p>
             </div>
         </div>
         

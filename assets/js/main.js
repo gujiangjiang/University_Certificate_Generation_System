@@ -7,12 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const selectors = {
         templateSelector: document.getElementById('template-selector'),
-        commonInfoSection: document.getElementById('common-info-section'),
-        commonStudentSection: document.getElementById('common-student-section'),
+        // --- 修改点：新增主内容区的选择器 ---
+        mainContentArea: document.getElementById('main-content-area'),
+        // --- 不再需要单独控制这些元素，由父容器统一管理 ---
+        // commonInfoSection: document.getElementById('common-info-section'),
+        // commonStudentSection: document.getElementById('common-student-section'),
         documentSelector: document.getElementById('document-selector'),
         docFormContainer: document.getElementById('document-form-container'),
         previewContainer: document.getElementById('preview-container'),
-        actionButtons: document.getElementById('action-buttons'),
+        // actionButtons: document.getElementById('action-buttons'),
         printBtn: document.getElementById('print-btn'),
         previewBtn: document.getElementById('preview-btn'),
     };
@@ -20,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. 初始化
     async function initialize() {
         try {
-            // 路径已修改为根相对路径
             const response = await fetch('/templates/manifest.json');
             if (!response.ok) throw new Error('无法加载模板清单 manifest.json');
             const manifest = await response.json();
@@ -29,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectors.templateSelector.appendChild(new Option(template.name, template.id));
             });
             
-            bindCommonFormEvents();
+            // --- 修改点：监听事件的表单现在是 mainContentArea 的一部分 ---
+            bindFormEvents();
         } catch (error) {
             console.error('初始化失败:', error);
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：${error.message}</div>`;
@@ -46,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resetUI(true);
 
         try {
-            // 路径已修改为根相对路径
             const response = await fetch(`/templates/${templateId}/config.json`);
             if (!response.ok) throw new Error('无法加载 config.json');
             state.config = await response.json(); // 保存配置
@@ -57,10 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             loadTemplateCSS(templateId);
 
-            // 动态显示通用信息模块
-            selectors.commonInfoSection.classList.remove('hidden');
-            selectors.commonStudentSection.classList.remove('hidden');
-            selectors.actionButtons.classList.remove('hidden');
+            // --- 修改点：显示主内容区，替代原来分别显示各个部分 ---
+            selectors.mainContentArea.classList.remove('hidden');
 
             // 创建文档选择按钮
             selectors.documentSelector.innerHTML = ''; // 清空旧按钮
@@ -98,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            // 路径已修改为根相对路径
             const response = await fetch(`/templates/${state.currentTemplate}/${docId}.html`);
             if (!response.ok) throw new Error(`无法加载 ${docId}.html`);
             const htmlContent = await response.text();
@@ -113,11 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.config.documents[docId]?.defaults) {
                 populateForm(selectors.docFormContainer, state.config.documents[docId].defaults);
             }
-
-            bindDocumentFormEvents();
+            
             updateAll();
 
-        // --- 修复点：恢复了 try...catch 语句块的完整性 ---
         } catch (error) { 
             console.error(`加载文档 ${docId} 失败:`, error);
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：加载文档失败。<br><pre>${error.stack}</pre></div>`;
@@ -199,17 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // 7. 事件绑定
-    function bindCommonFormEvents() {
-        [selectors.commonInfoSection, selectors.commonStudentSection].forEach(form => {
-            form.addEventListener('input', updateAll);
-            form.addEventListener('change', updateAll);
-        });
-    }
-
-    function bindDocumentFormEvents() {
-        selectors.docFormContainer.addEventListener('input', updateAll);
-        selectors.docFormContainer.addEventListener('change', updateAll);
+    // 7. 事件绑定 (逻辑简化)
+    function bindFormEvents() {
+        // --- 修改点：现在只监听主内容区的输入和变化即可 ---
+        selectors.mainContentArea.addEventListener('input', updateAll);
+        selectors.mainContentArea.addEventListener('change', updateAll);
     }
 
     selectors.templateSelector.addEventListener('change', (e) => loadTemplate(e.target.value));
@@ -231,10 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentTemplate = null;
             state.config = null;
             selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个模板和证件类型</div>';
-            // 隐藏通用模块
-            selectors.commonInfoSection.classList.add('hidden');
-            selectors.commonStudentSection.classList.add('hidden');
-            selectors.actionButtons.classList.add('hidden');
+            
+            // --- 修改点：隐藏主内容区，替代原来分别隐藏各个部分 ---
+            selectors.mainContentArea.classList.add('hidden');
+
             // 清空通用表单
             document.querySelectorAll('#common-info-section input, #common-student-section input').forEach(input => {
                 if (input.type === 'file') {
@@ -265,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = document.createElement('link');
         link.id = 'template-styles';
         link.rel = 'stylesheet';
-        // 路径已修改为根相对路径
         link.href = `/templates/${templateId}/style.css`;
         document.head.appendChild(link);
     }

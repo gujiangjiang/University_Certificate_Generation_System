@@ -251,3 +251,29 @@ button {
         border-radius: 0 !important;
     }
 }
+
+/* --- 新增：风险提醒样式 --- */
+.disclaimer {
+    margin-top: 30px;
+    padding: 15px;
+    border-left: 4px solid #dc3545; /* 红色左边框 */
+    background-color: #fdf2f2; /* 淡红色背景 */
+    border-radius: 4px;
+}
+
+.disclaimer p {
+    font-size: 13px; /* 调整字体大小使其易于阅读 */
+    line-height: 1.6;
+    color: #58151c; /* 深红色字体 */
+    margin-bottom: 5px;
+}
+
+.disclaimer p:last-child {
+    margin-bottom: 0;
+}
+
+.disclaimer strong {
+    color: #c51a2c; /* 更深的红色以突出标题 */
+    font-weight: 600;
+}
+/* --- 结束新增内容 --- */
