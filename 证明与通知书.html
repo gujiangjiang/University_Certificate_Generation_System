@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система генерации документов - Памир Университет</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Times New Roman', Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-panel {
+            flex: 0 0 380px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            height: fit-content;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        /* 通用证书样式 */
+        .certificate {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            padding: 40mm 30mm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            display: none;
+        }
+        
+        .certificate.active {
+            display: block;
+        }
+        
+        .certificate-border {
+            position: absolute;
+            top: 20mm;
+            left: 20mm;
+            right: 20mm;
+            bottom: 20mm;
+            border: 3px double #2c5aa0;
+            pointer-events: none;
+        }
+        
+        /* 录取通知书样式 */
+        .admission-letter {
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .letter-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .university-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .university-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a365d;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .university-name-en {
+            font-size: 18px;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+        
+        .document-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin: 30px 0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .letter-body {
+            margin: 40px 0;
+            text-align: justify;
+            line-height: 1.8;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .letter-body p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+        }
+        
+        .student-info {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            width: 200px;
+            color: #495057;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #212529;
+        }
+        
+        .letter-footer {
+            margin-top: 60px;
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 80px;
+        }
+        
+        .signature-block {
+            text-align: center;
+            width: 200px;
+        }
+        
+        .signature-line {
+            border-bottom: 2px solid #333;
+            margin-bottom: 10px;
+            height: 40px;
+        }
+        
+        .signature-title {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .date-section {
+            text-align: right;
+            margin-top: 30px;
+            font-size: 16px;
+            color: #495057;
+        }
+        
+        /* 在读证明样式 */
+        .enrollment-certificate {
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .certificate-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .certificate-number {
+            text-align: right;
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        
+        .certificate-body {
+            margin: 40px 0;
+            font-size: 16px;
+            line-height: 2.2;
+            color: #333;
+            text-align: justify;
+        }
+        
+        .highlight {
+            font-weight: bold;
+            color: #2c5aa0;
+            font-size: 18px;
+            padding: 0 5px;
+        }
+        
+        .seal-section {
+            position: relative;
+            margin-top: 100px;
+        }
+        
+        .official-seal {
+            position: absolute;
+            right: 100px;
+            top: -50px;
+            width: 150px;
+            height: 150px;
+            border: 5px solid #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #dc3545;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            opacity: 0.7;
+            text-align: center;
+            padding: 20px;
+            line-height: 1.2;
+        }
+        
+        /* 表单样式 */
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .document-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .doc-type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .doc-type-btn.active {
+            background: #2c5aa0;
+            color: white;
+            border-color: #2c5aa0;
+        }
+        
+        .doc-type-btn:hover {
+            border-color: #2c5aa0;
+            transform: translateY(-1px);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-separator {
+            height: 1px;
+            background: #e9ecef;
+            margin: 25px -25px;
+        }
+        
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a5f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                display: block;
+            }
+            
+            .control-panel {
+                display: none;
+            }
+            
+            .certificate {
+                width: 100%;
+                height: 100vh;
+                padding: 40mm 30mm;
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="control-panel">
+            <h1>🎓 Система генерации документов Памир Университета</h1>
+            
+            <div class="document-selector">
+                <button class="doc-type-btn active" onclick="selectDocument('admission')">Письмо о зачислении</button>
+                <button class="doc-type-btn" onclick="selectDocument('enrollment')">Справка об обучении</button>
+            </div>
+            
+            <!-- 通用信息 -->
+            <div class="form-section-title">Основная информация</div>
+            
+            <div class="form-group">
+                <label for="universityName">Название университета (RU)</label>
+                <input type="text" id="universityName" value="ПАМИР УНИВЕРСИТЕТ">
+            </div>
+            
+            <div class="form-group">
+                <label for="universityNameEn">University Name (EN)</label>
+                <input type="text" id="universityNameEn" value="PAMIR UNIVERSITY">
+            </div>
+            
+            <div class="form-group">
+                <label for="universityAddress">Адрес университета</label>
+                <input type="text" id="universityAddress" value="г. Душанбе, ул. Айни, 123">
+            </div>
+            
+            <div class="form-group">
+                <label for="universityPhone">Телефон</label>
+                <input type="text" id="universityPhone" value="+992 37 222 22 22">
+            </div>
+            
+            <div class="form-separator"></div>
+            
+            <!-- 录取通知书表单 -->
+            <div id="admissionForm" class="form-section active">
+                <div class="form-section-title">Письмо о зачислении</div>
+                
+                <div class="form-group">
+                    <label for="letterNumber">Номер письма</label>
+                    <input type="text" id="letterNumber" value="№ 2024/09/1234">
+                </div>
+                
+                <div class="form-group">
+                    <label for="admissionDate">Дата зачисления</label>
+                    <input type="date" id="admissionDate" value="2024-07-15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentName">ФИО студента</label>
+                    <input type="text" id="studentName" value="Иванов Иван Иванович">
+                </div>
+                
+                <div class="form-group">
+                    <label for="passportNumber">Номер паспорта</label>
+                    <input type="text" id="passportNumber" value="A1234567">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentId">Номер студента</label>
+                    <input type="text" id="studentId" value="2024091234">
+                </div>
+                
+                <div class="form-group">
+                    <label for="faculty">Факультет</label>
+                    <input type="text" id="faculty" value="Факультет информационных технологий">
+                </div>
+                
+                <div class="form-group">
+                    <label for="specialty">Специальность</label>
+                    <input type="text" id="specialty" value="Компьютерные науки">
+                </div>
+                
+                <div class="form-group">
+                    <label for="educationLevel">Уровень образования</label>
+                    <select id="educationLevel">
+                        <option value="бакалавриат">бакалавриат</option>
+                        <option value="магистратура">магистратура</option>
+                        <option value="докторантура">докторантура</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studyPeriod">Срок обучения (лет)</label>
+                    <input type="text" id="studyPeriod" value="4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="academicYear">Учебный год</label>
+                    <input type="text" id="academicYear" value="2024-2025">
+                </div>
+                
+                <div class="form-group">
+                    <label for="deanName">ФИО декана</label>
+                    <input type="text" id="deanName" value="Петров Петр Петрович">
+                </div>
+            </div>
+            
+            <!-- 在读证明表单 -->
+            <div id="enrollmentForm" class="form-section">
+                <div class="form-section-title">Справка об обучении</div>
+                
+                <div class="form-group">
+                    <label for="certificateNumber">Номер справки</label>
+                    <input type="text" id="certificateNumber" value="С-2024-001234">
+                </div>
+                
+                <div class="form-group">
+                    <label for="certificateDate">Дата выдачи</label>
+                    <input type="date" id="certificateDate" value="2024-01-15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollStudentName">ФИО студента</label>
+                    <input type="text" id="enrollStudentName" value="Иванов Иван Иванович">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollStudentId">Номер студента</label>
+                    <input type="text" id="enrollStudentId" value="2024091234">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollPassport">Номер паспорта</label>
+                    <input type="text" id="enrollPassport" value="A1234567">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollFaculty">Факультет</label>
+                    <input type="text" id="enrollFaculty" value="Факультет информационных технологий">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollSpecialty">Специальность</label>
+                    <input type="text" id="enrollSpecialty" value="Компьютерные науки">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollYear">Год поступления</label>
+                    <input type="text" id="enrollYear" value="2024">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enrollCourse">Курс</label>
+                    <input type="text" id="enrollCourse" value="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rectorName">ФИО ректора</label>
+                    <input type="text" id="rectorName" value="Сидоров Сидор Сидорович">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="generateDocument()">Предварительный просмотр</button>
+                <button class="btn-success" onclick="printDocument()">Печать</button>
+            </div>
+        </div>
+        
+        <div class="preview-area">
+            <!-- 录取通知书预览 -->
+            <div id="admissionPreview" class="certificate admission-letter active">
+                <div class="certificate-border"></div>
+                
+                <div class="letter-header">
+                    <div class="university-logo">ПУ<br>ЛОГО</div>
+                    <div class="university-name" id="previewUniversityName">ПАМИР УНИВЕРСИТЕТ</div>
+                    <div class="university-name-en" id="previewUniversityNameEn">PAMIR UNIVERSITY</div>
+                </div>
+                
+                <div class="document-title">ПИСЬМО О ЗАЧИСЛЕНИИ</div>
+                
+                <div class="letter-body">
+                    <p>
+                        <span id="previewLetterNumber">№ 2024/09/1234</span> от 
+                        <span id="previewAdmissionDate">15.07.2024</span>
+                    </p>
+                    
+                    <div class="student-info">
+                        <div class="info-row">
+                            <div class="info-label">ФИО студента:</div>
+                            <div class="info-value" id="previewStudentName">Иванов Иван Иванович</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Номер паспорта:</div>
+                            <div class="info-value" id="previewPassportNumber">A1234567</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Номер студента:</div>
+                            <div class="info-value" id="previewStudentId">2024091234</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Факультет:</div>
+                            <div class="info-value" id="previewFaculty">Факультет информационных технологий</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Специальность:</div>
+                            <div class="info-value" id="previewSpecialty">Компьютерные науки</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Уровень образования:</div>
+                            <div class="info-value" id="previewEducationLevel">бакалавриат</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Срок обучения:</div>
+                            <div class="info-value" id="previewStudyPeriod">4 года</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Учебный год:</div>
+                            <div class="info-value" id="previewAcademicYear">2024-2025</div>
+                        </div>
+                    </div>
+                    
+                    <p>
+                        Уведомляем Вас, что Вы успешно зачислены в Памир Университет 
+                        в <span id="previewEducationLevel2">бакалавриат</span> на специальность 
+                        "<span id="previewSpecialty2">Компьютерные науки</span>" 
+                        на <span id="previewStudyPeriod2">4</span>-летний срок обучения.
+                    </p>
+                    
+                    <p>
+                        Начало занятий: 1 сентября <span id="previewAcademicYearStart">2024</span> года.
+                        Просим прибыть в университет в установленные сроки с необходимыми документами.
+                    </p>
+                    
+                    <p>
+                        Поздравляем с началом учебы в нашем университете и желаем Вам 
+                        успехов в получении знаний!
+                    </p>
+                </div>
+                
+                <div class="letter-footer">
+                    <div class="signature-section">
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <div class="signature-title">Декан факультета</div>
+                            <div id="previewDeanName">Петров Петр Петрович</div>
+                        </div>
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <div class="signature-title">Дата</div>
+                            <div id="previewSignatureDate">15.07.2024</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 在读证明预览 -->
+            <div id="enrollmentPreview" class="certificate enrollment-certificate">
+                <div class="certificate-border"></div>
+                
+                <div class="certificate-header">
+                    <div class="university-logo">ПУ<br>ЛОГО</div>
+                    <div class="university-name" id="previewEnrollUniversityName">ПАМИР УНИВЕРСИТЕТ</div>
+                    <div class="university-name-en" id="previewEnrollUniversityNameEn">PAMIR UNIVERSITY</div>
+                </div>
+                
+                <div class="certificate-number" id="previewCertificateNumber">С-2024-001234</div>
+                
+                <div class="document-title">СПРАВКА ОБ ОБУЧЕНИИ</div>
+                
+                <div class="certificate-body">
+                    <p style="text-align: center; font-weight: bold; font-size: 18px;">
+                        Настоящая справка выдана <span id="previewEnrollStudentName2" class="highlight">Иванову Ивану Ивановичу</span>, 
+                        студенту Памир Университета
+                    </p>
+                    
+                    <p>
+                        Настоящим подтверждаем, что гражданин <span id="previewEnrollStudentName3" class="highlight">Иванов Иван Иванович</span>, 
+                        паспорт № <span id="previewEnrollPassport2" class="highlight">A1234567</span>, 
+                        является студентом <span id="previewEnrollUniversityName2" class="highlight">Памир Университета</span> 
+                        с <span id="previewEnrollYear2" class="highlight">2024</span> года.
+                    </p>
+                    
+                    <p>
+                        Обучается на <span id="previewEnrollCourse2" class="highlight">1</span> курсе 
+                        <span id="previewEnrollFaculty2" class="highlight">Факультета информационных технологий</span> 
+                        по специальности "<span id="previewEnrollSpecialty2" class="highlight">Компьютерные науки</span>".
+                    </p>
+                    
+                    <p>
+                        Номер студенческого билета: <span id="previewEnrollStudentId2" class="highlight">2024091234</span>
+                    </p>
+                    
+                    <p>
+                        Справка выдана для предоставления по месту требования.
+                    </p>
+                </div>
+                
+                <div class="seal-section">
+                    <div class="official-seal">ПЕЧАТЬ УНИВЕРСИТЕТА</div>
+                    <div class="signature-section">
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <div class="signature-title">Ректор университета</div>
+                            <div id="previewRectorName">Сидоров Сидор Сидорович</div>
+                        </div>
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <div class="signature-title">Дата выдачи</div>
+                            <div id="previewCertificateDate">15.01.2024</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换文档类型
+        function selectDocument(type) {
+            // 更新按钮状态
+            document.querySelectorAll('.doc-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 显示对应的表单
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(type + 'Form').classList.add('active');
+            
+            // 显示对应的预览
+            document.querySelectorAll('.certificate').forEach(certificate => {
+                certificate.classList.remove('active');
+            });
+            document.getElementById(type + 'Preview').classList.add('active');
+        }
+        
+        // 生成文档预览
+        function generateDocument() {
+            const docType = document.querySelector('.doc-type-btn.active').textContent.includes('зачислении') ? 'admission' : 'enrollment';
+            
+            if (docType === 'admission') {
+                // 更新录取通知书预览
+                document.getElementById('previewUniversityName').textContent = document.getElementById('universityName').value;
+                document.getElementById('previewUniversityNameEn').textContent = document.getElementById('universityNameEn').value;
+                document.getElementById('previewLetterNumber').textContent = document.getElementById('letterNumber').value;
+                
+                const admissionDate = document.getElementById('admissionDate').value;
+                const formattedDate = formatDate(admissionDate);
+                document.getElementById('previewAdmissionDate').textContent = formattedDate;
+                
+                document.getElementById('previewStudentName').textContent = document.getElementById('studentName').value;
+                document.getElementById('previewPassportNumber').textContent = document.getElementById('passportNumber').value;
+                document.getElementById('previewStudentId').textContent = document.getElementById('studentId').value;
+                document.getElementById('previewFaculty').textContent = document.getElementById('faculty').value;
+                document.getElementById('previewSpecialty').textContent = document.getElementById('specialty').value;
+                document.getElementById('previewSpecialty2').textContent = document.getElementById('specialty').value;
+                document.getElementById('previewEducationLevel').textContent = document.getElementById('educationLevel').value;
+                document.getElementById('previewEducationLevel2').textContent = document.getElementById('educationLevel').value;
+                document.getElementById('previewStudyPeriod').textContent = document.getElementById('studyPeriod').value + ' года';
+                document.getElementById('previewStudyPeriod2').textContent = document.getElementById('studyPeriod').value;
+                document.getElementById('previewAcademicYear').textContent = document.getElementById('academicYear').value;
+                
+                const academicYearStart = document.getElementById('academicYear').value.split('-')[0];
+                document.getElementById('previewAcademicYearStart').textContent = academicYearStart;
+                
+                document.getElementById('previewDeanName').textContent = document.getElementById('deanName').value;
+                document.getElementById('previewSignatureDate').textContent = formattedDate;
+            } else {
+                // 更新在读证明预览
+                document.getElementById('previewEnrollUniversityName').textContent = document.getElementById('universityName').value;
+                document.getElementById('previewEnrollUniversityNameEn').textContent = document.getElementById('universityNameEn').value;
+                document.getElementById('previewCertificateNumber').textContent = document.getElementById('certificateNumber').value;
+                
+                const certificateDate = document.getElementById('certificateDate').value;
+                const formattedCertDate = formatDate(certificateDate);
+                document.getElementById('previewCertificateDate').textContent = formattedCertDate;
+                
+                const studentName = document.getElementById('enrollStudentName').value;
+                document.getElementById('previewEnrollStudentName2').textContent = studentName;
+                document.getElementById('previewEnrollStudentName3').textContent = studentName;
+                
+                document.getElementById('previewEnrollPassport2').textContent = document.getElementById('enrollPassport').value;
+                document.getElementById('previewEnrollUniversityName2').textContent = document.getElementById('universityName').value;
+                document.getElementById('previewEnrollYear2').textContent = document.getElementById('enrollYear').value;
+                document.getElementById('previewEnrollCourse2').textContent = document.getElementById('enrollCourse').value;
+                document.getElementById('previewEnrollFaculty2').textContent = document.getElementById('enrollFaculty').value;
+                document.getElementById('previewEnrollSpecialty2').textContent = document.getElementById('enrollSpecialty').value;
+                document.getElementById('previewEnrollStudentId2').textContent = document.getElementById('enrollStudentId').value;
+                document.getElementById('previewRectorName').textContent = document.getElementById('rectorName').value;
+            }
+            
+            alert('Предварительный просмотр обновлен!');
+        }
+        
+        // 打印文档
+        function printDocument() {
+            generateDocument();
+            window.print();
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+        
+        // 初始化日期为今天
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('admissionDate').value = today;
+            document.getElementById('certificateDate').value = today;
+        };
+    </script>
+</body>
+</html>
