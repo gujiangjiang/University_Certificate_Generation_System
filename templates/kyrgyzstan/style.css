@@ -1,128 +1,43 @@
 /*
- * 仅适用于俄罗斯模板的样式
+ * =====================================
+ * 吉尔吉斯斯坦模板专属样式 (style.css)
+ * =====================================
+ * 描述:
+ * 此文件现在只包含针对吉尔吉斯斯坦模板的特定样式。
+ * 它首先会引入通用的基础和打印样式，然后在这些通用样式的基础上进行微调和补充。
  */
 
-/* 证书通用样式 */
-.certificate {
-    width: 210mm;
-    background-color: white;
-    padding: 25mm 20mm;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    position: relative;
-    font-family: 'Times New Roman', serif;
-    box-sizing: border-box;
-    /* 新增：确保在打印时高度是自动的，避免内容溢出 */
-    height: auto; 
-}
+/*
+ * * 步骤 1: 引入通用样式文件
+ * @import 指令必须放在文件的最开始。
+ * 注意：这里的路径已经更新为从网站根目录 ('/') 开始的绝对路径，
+ * 这使得引用关系更加稳定和清晰。
+ */
+@import url('/assets/css/templates/common.css');
+@import url('/assets/css/templates/print.css');
 
-.certificate-border {
-    position: absolute;
-    top: 15mm;
-    left: 15mm;
-    right: 15mm;
-    bottom: 15mm;
-    border: 3px double #2c5aa0;
-    pointer-events: none;
-}
 
-/* 修复在读证明的布局问题 */
+/*
+ * 步骤 2: 定义此模板的专属样式
+ * 以下是仅适用于吉尔吉斯斯坦模板的样式规则。
+ */
+
+/* 修复在读证明的布局问题 (专属样式) */
 .enrollment-certificate.certificate {
-    /* 修改：将固定高度改为最小高度，让内容自然撑开 */
+    /* 修改：将固定高度改为最小高度，让内容可以根据实际长度自然撑开，防止溢出 */
     min-height: 297mm; 
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* 使用 flex 布局来控制页脚位置 */
 }
 .enrollment-certificate .certificate-body {
-    /* 修改：让正文部分占据尽可能多的空间，将页脚推到底部 */
+    /* 修改：让正文部分占据尽可能多的空间，从而将页脚部分推到底部 */
     flex-grow: 1; 
 }
 .enrollment-certificate .seal-section {
-    /* 修改：确保页脚部分不伸缩，保持原有大小 */
+    /* 修改：确保页脚部分(公章和签名)不伸缩，保持其原有大小 */
     flex-shrink: 0; 
 }
 
-
-/* 录取通知书 & 在读证明 通用样式 */
-.letter-header, .certificate-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-.university-logo-placeholder {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 15px;
-    background-color: #2c5aa0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 12px;
-    text-align: center;
-    line-height: 1.2;
-    position: relative;
-}
-.university-name-display {
-    font-size: 24px;
-    font-weight: bold;
-    color: #1a365d;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-.university-name-en-display {
-    font-size: 18px;
-    color: #495057;
-    margin-bottom: 15px;
-}
-.document-title {
-    font-size: 26px;
-    font-weight: bold;
-    color: #2c5aa0;
-    margin: 20px 0;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-}
-.student-info {
-    background-color: #f8f9fa;
-    padding: 15px;
-    margin: 20px 0;
-    border-left: 5px solid #2c5aa0;
-}
-.info-row {
-    display: flex;
-    margin-bottom: 8px;
-    font-size: 15px;
-}
-.info-label {
-    font-weight: bold;
-    width: 180px;
-    color: #495057;
-}
-.info-value {
-    flex: 1;
-    color: #212529;
-}
-.signature-section {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-}
-.signature-block {
-    text-align: center;
-    width: 200px;
-}
-.signature-line {
-    border-bottom: 2px solid #333;
-    margin-bottom: 10px;
-    height: 30px;
-}
-.signature-title {
-    font-size: 14px;
-    color: #666;
-}
 
 /* 录取通知书专属样式 */
 .admission-letter .letter-body {
@@ -134,9 +49,9 @@
 }
 .admission-letter .letter-body p {
     margin-bottom: 15px;
-    text-indent: 2em;
+    text-indent: 2em; /* 段落首行缩进 */
 }
-/* 新增：为录取通知书专门设置一个高度，确保打印时正好为一页A4 */
+/* 新增：为录取通知书专门设置一个固定高度，确保打印时正好为一页A4 */
 .admission-letter.certificate {
     height: 297mm;
 }
@@ -146,7 +61,7 @@
 .enrollment-certificate .certificate-header {
     margin-bottom: 25px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 2px solid #e9ecef; /* 头部下方的分割线 */
 }
 .enrollment-certificate .certificate-number {
     text-align: right;
@@ -164,54 +79,44 @@
 .enrollment-certificate .certificate-body p {
     margin-bottom: 15px;
 }
+/* 在读证明中的高亮文本样式 */
 .highlight {
     font-weight: bold;
     color: #2c5aa0;
     font-size: 17px;
     padding: 0 4px;
 }
+/* 公章区域的定位 */
 .seal-section {
     position: relative;
     margin-top: 40px;
 }
+/* 公章的样式 */
 .official-seal {
     position: absolute;
     right: 100px;
     top: -50px;
     width: 150px;
     height: 150px;
-    border: 5px solid #dc3545;
-    border-radius: 50%;
+    border: 5px solid #dc3545; /* 红色边框 */
+    border-radius: 50%; /* 圆形 */
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
     color: #dc3545;
     font-weight: bold;
-    transform: rotate(-15deg);
-    opacity: 0.7;
+    transform: rotate(-15deg); /* 旋转效果 */
+    opacity: 0.7; /* 半透明效果 */
     text-align: center;
     padding: 20px;
     line-height: 1.2;
 }
 
 
-/* --- 学生证样式 --- */
-.student-card {
-    width: 500px;
-    height: 320px;
-    background-color: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    line-height: initial;
-}
+/* --- 学生证专属样式 --- */
 .card-front .header {
-    background-color: #3b82f6;
+    background-color: #3b82f6; /* 卡片头部背景色 */
     color: white;
     padding: 15px 20px;
     display: flex;
@@ -219,15 +124,7 @@
     gap: 15px;
     height: 90px;
 }
-.student-card .university-name-display {
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 1.2;
-    color: white;
-    letter-spacing: normal;
-    text-transform: none;
-    margin-bottom: 2px;
-}
+
 .logo-container {
     width: 60px;
     height: 60px;
@@ -423,112 +320,4 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.preview-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-    padding: 8px 15px;
-    background-color: white;
-    border-radius: 8px;
-    text-align: center;
-    width: 500px;
-}
-
-/* --- 打印样式修正 --- */
-@media print {
-    /* 修复：添加page指令来更好地控制打印布局 */
-    @page {
-        size: A4;
-        margin: 0;
-    }
-    /* 修复：确保body和html没有多余的边距和填充 */
-    body, html {
-        margin: 0;
-        padding: 0;
-        width: 210mm;
-        height: 297mm;
-    }
-    
-    #preview-container > .preview-title {
-        display: none !important;
-    }
-    #preview-container > .student-card {
-        width: 500px !important;
-        height: 320px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-        page-break-inside: avoid !important;
-        border-radius: 16px !important;
-        overflow: hidden !important;
-    }
-    #preview-container > .card-front {
-        margin-top: 40mm !important;
-        margin-bottom: 30mm !important;
-    }
-    #preview-container > .card-back {
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-    }
-    .student-card, .card-front .header, .card-body, .card-back .black-bar {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-    /* 修复：移除在打印视图下的缩放，直接使用原始尺寸 */
-    .certificate {
-        transform: scale(1) !important;
-        box-shadow: none !important;
-        margin: 0 !important;
-        page-break-after: always; /* 确保每个证书后都分页 */
-    }
-}
-
-/* --- 响应式布局 (针对小屏幕设备) --- */
-@media (max-width: 992px) {
-    .certificate, .student-card, .preview-title {
-        transform-origin: top center;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* --- 平板视图 (577px - 992px) --- */
-    .certificate {
-        transform: scale(0.9);
-        margin-bottom: calc(297mm * (1 - 0.9) * -1); /* 补偿缩放产生的空白 */
-    }
-    .student-card, .preview-title {
-        transform: scale(0.9);
-    }
-    .preview-title {
-        margin-bottom: 10px; /* 保持一个正的间距，防止重叠 */
-    }
-    .student-card {
-         /* 补偿缩放产生的空白，同时保持20px的视觉间距 */
-        margin-bottom: calc(320px * (1 - 0.9) * -1 + 20px);
-    }
-    /* 确保最后一个元素没有负边距，避免影响后续内容 */
-    .card-back {
-        margin-bottom: 20px;
-    }
-
-    /* --- 手机视图 (<= 576px) --- */
-    @media (max-width: 576px) {
-        .certificate {
-            transform: scale(0.45);
-            margin-bottom: calc(297mm * (1 - 0.45) * -1);
-        }
-        .student-card, .preview-title {
-            transform: scale(0.7);
-        }
-        .student-card {
-            /* 用同样的逻辑计算更小尺寸下的边距 */
-            margin-bottom: calc(320px * (1 - 0.7) * -1 + 20px);
-        }
-         .card-back {
-            margin-bottom: 20px;
-        }
-    }
 }

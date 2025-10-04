@@ -1,0 +1,69 @@
+/*
+ * =================================
+ * 全局通用打印样式 (print.css)
+ * =================================
+ * 描述:
+ * 这个文件定义了所有模板在打印时的通用规则。
+ * 目的:
+ * - 确保打印输出为标准的 A4 尺寸。
+ * - 移除预览时的多余元素（如阴影、标题）。
+ * - 强制渲染背景色和图片。
+ * - 控制分页行为。
+ */
+
+@media print {
+    /* 定义打印页面的基本属性 */
+    @page {
+        size: A4; /* 设置页面大小为 A4 */
+        margin: 0; /* 去除浏览器默认的页边距 */
+    }
+
+    /* 重置 body 和 html 的边距，防止意外的空白 */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 210mm; /* 强制宽度为 A4 宽度 */
+        height: 297mm; /* 强制高度为 A4 高度 */
+    }
+
+    /* 在打印时隐藏预览区域的标题 (如 "学生证预览 - 正面") */
+    #preview-container > .preview-title {
+        display: none !important;
+    }
+
+    /* 针对学生证的打印微调 */
+    #preview-container > .student-card {
+        width: 500px !important;
+        height: 320px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; /* 可以保留轻微阴影以区分卡片边缘 */
+        page-break-inside: avoid !important; /* 防止卡片在打印时被分页截断 */
+        border-radius: 16px !important;
+        overflow: hidden !important;
+    }
+
+    /* 调整学生证正反面在打印页的位置 */
+    #preview-container > .card-front {
+        margin-top: 40mm !important; /* 正面距离页面顶部的距离 */
+        margin-bottom: 30mm !important;
+    }
+    #preview-container > .card-back {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* 强制浏览器打印背景色和图片，否则可能会打印出白色背景 */
+    .certificate, .student-card, .card-front .header, .card-body, .card-back .black-bar {
+        -webkit-print-color-adjust: exact !important; /* 兼容 Chrome/Safari */
+        print-color-adjust: exact !important; /* 标准属性 */
+    }
+
+    /* 移除证书在打印视图下的缩放和阴影，使其铺满页面 */
+    .certificate {
+        transform: scale(1) !important; /* 恢复原始尺寸 */
+        box-shadow: none !important; /* 去掉阴影 */
+        margin: 0 !important; /* 去掉外边距 */
+        page-break-after: always; /* 确保每个证书打印后都强制分页，防止多个证书打印在同一页 */
+    }
+}

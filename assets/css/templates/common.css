@@ -1,0 +1,218 @@
+/*
+ * =================================
+ * 全局通用模板样式 (common.css)
+ * =================================
+ * 描述:
+ * 这个文件包含了所有大学证书和学生卡片模板共享的基础样式。
+ * 目的是为了减少代码冗余，提高代码复用性。
+ * 新建任何国家或大学的模板时，都应首先引入此文件。
+ */
+
+/* --- 证书通用基础样式 (适用于录取通知书、在读证明等) --- */
+.certificate {
+    width: 210mm; /* A4 纸张宽度 */
+    background-color: white;
+    padding: 25mm 20mm; /* 内边距，为内容和边框留出空间 */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* 页面预览时的阴影效果 */
+    position: relative;
+    font-family: 'Times New Roman', serif; /* 西方证书常用字体 */
+    box-sizing: border-box; /* 盒模型设置，确保 padding 和 border 不会增加元素总宽高 */
+    height: auto; /* 默认高度自动，确保内容不会溢出 */
+}
+
+/* 证书通用边框 */
+.certificate-border {
+    position: absolute;
+    top: 15mm;
+    left: 15mm;
+    right: 15mm;
+    bottom: 15mm;
+    border: 3px double #2c5aa0; /* 双线边框，颜色可根据学校主色调调整 */
+    pointer-events: none; /* 确保边框不会干扰内容的点击等事件 */
+}
+
+/* 证书通用头部样式 */
+.certificate-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 通用Logo占位符/容器样式 */
+.university-logo-placeholder {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    background-color: #2c5aa0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    position: relative;
+    overflow: hidden; /* 确保图片不会超出圆形边界 */
+}
+
+/* 学校名称（主语言）通用样式 */
+.university-name-display {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1a365d;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* 学校名称（英文）通用样式 */
+.university-name-en-display {
+    font-size: 18px;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+/* 文档标题通用样式 (如 "录取通知书", "在读证明") */
+.document-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #2c5aa0;
+    margin: 20px 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* 学生信息区块通用样式 */
+.student-info {
+    background-color: #f8f9fa; /* 淡灰色背景，突出信息区域 */
+    padding: 15px;
+    margin: 20px 0;
+    border-left: 5px solid #2c5aa0; /* 左侧的装饰性色条 */
+}
+
+/* 信息行通用样式 */
+.info-row {
+    display: flex;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+/* 信息标签通用样式 (如 "姓名", "学号") */
+.info-label {
+    font-weight: bold;
+    width: 180px; /* 固定宽度，确保对齐 */
+    color: #495057;
+}
+
+/* 信息值通用样式 (具体信息内容) */
+.info-value {
+    flex: 1; /* 占据剩余空间 */
+    color: #212529;
+}
+
+/* 签名区域通用样式 */
+.signature-section {
+    display: flex;
+    justify-content: space-between; /* 签名块左右分布 */
+    margin-top: 40px;
+}
+
+/* 单个签名块通用样式 */
+.signature-block {
+    text-align: center;
+    width: 200px;
+}
+
+/* 签名线上方空间 */
+.signature-line {
+    border-bottom: 2px solid #333;
+    margin-bottom: 10px;
+    height: 30px;
+}
+
+/* 签名人职务标题通用样式 (如 "校长", "院长") */
+.signature-title {
+    font-size: 14px;
+    color: #666;
+}
+
+
+/* --- 学生证通用基础样式 --- */
+.student-card {
+    width: 500px;
+    height: 320px;
+    background-color: white;
+    border-radius: 16px; /* 圆角 */
+    overflow: hidden; /* 隐藏超出圆角部分的内容 */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px; /* 与下一个元素的间距 */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; /* 使用更现代的UI字体 */
+    line-height: initial; /* 重置行高，方便内部精确控制 */
+}
+
+/* 卡片预览标题 (如 "学生证预览 - 正面") */
+.preview-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    width: 500px;
+}
+
+
+/* --- 响应式布局 (针对小屏幕设备，通用) --- */
+@media (max-width: 992px) {
+    /* 让证书和卡片在小屏幕上居中显示 */
+    .certificate, .student-card, .preview-title {
+        transform-origin: top center; /* 设置缩放的原点为顶部中心 */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* --- 平板视图 (577px - 992px) --- */
+    .certificate {
+        transform: scale(0.9); /* 缩小到90% */
+        /* 通过负的 margin-bottom 来补偿缩放后产生的多余空白，防止页面出现大片空白 */
+        margin-bottom: calc(297mm * (1 - 0.9) * -1);
+    }
+    .student-card, .preview-title {
+        transform: scale(0.9);
+    }
+    .preview-title {
+        margin-bottom: 10px; /* 保持一个正的间距，防止重叠 */
+    }
+    .student-card {
+         /* 补偿缩放产生的空白，同时保持20px的视觉间距 */
+        margin-bottom: calc(320px * (1 - 0.9) * -1 + 20px);
+    }
+    /* 确保最后一个元素没有负边距，避免影响后续内容 */
+    .card-back {
+        margin-bottom: 20px;
+    }
+
+    /* --- 手机视图 (<= 576px) --- */
+    @media (max-width: 576px) {
+        .certificate {
+            transform: scale(0.45); /* 在手机上进一步缩小 */
+            margin-bottom: calc(297mm * (1 - 0.45) * -1);
+        }
+        .student-card, .preview-title {
+            transform: scale(0.7);
+        }
+        .student-card {
+            /* 用同样的逻辑计算更小尺寸下的边距 */
+            margin-bottom: calc(320px * (1 - 0.7) * -1 + 20px);
+        }
+         .card-back {
+            margin-bottom: 20px;
+        }
+    }
+}
