@@ -96,3 +96,11 @@
 .toast-fade-out {
     animation: toast-fade-out 0.5s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
 }
+
+/* --- 新增：打印样式 --- */
+@media print {
+    /* 在打印时，完全隐藏Toast容器 */
+    #toast-container {
+        display: none !important;
+    }
+}
