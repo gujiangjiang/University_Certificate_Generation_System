@@ -7,15 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const selectors = {
         templateSelector: document.getElementById('template-selector'),
-        // --- 修改点：新增主内容区的选择器 ---
         mainContentArea: document.getElementById('main-content-area'),
-        // --- 不再需要单独控制这些元素，由父容器统一管理 ---
-        // commonInfoSection: document.getElementById('common-info-section'),
-        // commonStudentSection: document.getElementById('common-student-section'),
         documentSelector: document.getElementById('document-selector'),
         docFormContainer: document.getElementById('document-form-container'),
         previewContainer: document.getElementById('preview-container'),
-        // actionButtons: document.getElementById('action-buttons'),
         printBtn: document.getElementById('print-btn'),
         previewBtn: document.getElementById('preview-btn'),
     };
@@ -23,6 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. 初始化
     async function initialize() {
         try {
+            // --- 新增：页面加载时显示风险提醒Toast ---
+            showToast({
+                message: '<strong>风险提醒：</strong>本工具仅供学习和技术测试使用，请勿用于非法用途。使用本工具造成的任何后果由使用者自行承担。',
+                type: 'warning',
+                persistent: true // 使其一直显示，直到用户手动关闭
+            });
+
             const response = await fetch('/templates/manifest.json');
             if (!response.ok) throw new Error('无法加载模板清单 manifest.json');
             const manifest = await response.json();
@@ -31,10 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectors.templateSelector.appendChild(new Option(template.name, template.id));
             });
             
-            // --- 修改点：监听事件的表单现在是 mainContentArea 的一部分 ---
             bindFormEvents();
         } catch (error) {
             console.error('初始化失败:', error);
+            showToast({ message: `初始化失败: ${error.message}`, type: 'warning' });
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：${error.message}</div>`;
         }
     }
@@ -58,12 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
             populateForm(document.body, state.config.studentInfoDefaults);
 
             loadTemplateCSS(templateId);
-
-            // --- 修改点：显示主内容区，替代原来分别显示各个部分 ---
             selectors.mainContentArea.classList.remove('hidden');
 
+            // --- 新增：选择模板后显示Toast ---
+            const selectedTemplateName = selectors.templateSelector.options[selectors.templateSelector.selectedIndex].text;
+            showToast({
+                message: `已选择模板：${selectedTemplateName}。<br>请完善信息后选择证件类型。`,
+                type: 'success'
+            });
+
             // 创建文档选择按钮
-            selectors.documentSelector.innerHTML = ''; // 清空旧按钮
+            selectors.documentSelector.innerHTML = '';
             for (const [docId, docInfo] of Object.entries(state.config.documents)) {
                 if (docInfo.available) {
                     const button = document.createElement('button');
@@ -73,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectors.documentSelector.appendChild(button);
                 }
             }
-            // 初始加载时，如果默认有文档，则加载第一个
             const firstDoc = document.querySelector('.doc-type-btn');
             if(firstDoc) {
                 loadDocument(firstDoc.dataset.docId);
@@ -83,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error(`加载模板 ${templateId} 失败:`, error);
+            showToast({ message: '错误：加载模板失败。', type: 'warning' });
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：加载模板失败。</div>`;
             state.config = null;
         }
@@ -108,19 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
             selectors.docFormContainer.innerHTML = doc.getElementById('form-snippet')?.innerHTML || '';
             selectors.previewContainer.innerHTML = doc.getElementById('preview-snippet')?.innerHTML || '';
 
-            // 使用配置填充文档特定表单
             if (state.config.documents[docId]?.defaults) {
                 populateForm(selectors.docFormContainer, state.config.documents[docId].defaults);
             }
             
             updateAll();
 
+            // --- 新增：选择证件后显示Toast ---
+            const docName = state.config.documents[docId].name;
+            showToast({ message: `已生成 ${docName} 预览。`, type: 'info' });
+
         } catch (error) { 
             console.error(`加载文档 ${docId} 失败:`, error);
+            showToast({ message: `错误：加载文档 ${docId} 失败。`, type: 'warning' });
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：加载文档失败。<br><pre>${error.stack}</pre></div>`;
         }
     }
 
+    // ... (updateAll, updatePreview, updateCalculatedFields 函数保持不变) ...
     // 4. 更新所有预览
     function updateAll() {
         if (!state.currentTemplate) return;
@@ -142,6 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const placeholder = container?.querySelector('.placeholder');
 
                     if (input.files && input.files[0]) {
+                        // --- 新增：上传图片时显示Toast ---
+                        const isLogo = bindKey === 'logo';
+                        const toastMessage = isLogo ? '学校Logo已更新' : '学生照片已更新';
+                        showToast({ message: toastMessage, type: 'info', duration: 2500 });
+                        
                         const reader = new FileReader();
                         reader.onload = e => {
                             imgElement.src = e.target.result;
@@ -182,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('[data-preview-id="issueDate"]').forEach(el => el.textContent = formatDate(startDate));
 
             if (!isNaN(studyPeriod)) {
-                // 创建一个新的日期对象进行计算，避免修改原始的startDate
                 const endDate = new Date(startDate);
                 endDate.setFullYear(endDate.getFullYear() + studyPeriod);
                 document.querySelectorAll('[data-preview-id="validDate"]').forEach(el => el.textContent = formatDate(endDate));
@@ -198,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 7. 事件绑定 (逻辑简化)
     function bindFormEvents() {
-        // --- 修改点：现在只监听主内容区的输入和变化即可 ---
         selectors.mainContentArea.addEventListener('input', updateAll);
         selectors.mainContentArea.addEventListener('change', updateAll);
     }
@@ -207,12 +222,19 @@ document.addEventListener('DOMContentLoaded', () => {
     selectors.documentSelector.addEventListener('click', (e) => {
         if (e.target.matches('.doc-type-btn')) loadDocument(e.target.dataset.docId);
     });
-    selectors.previewBtn.addEventListener('click', updateAll);
+    
+    // --- 修改点：为按钮点击添加Toast ---
+    selectors.previewBtn.addEventListener('click', () => {
+        updateAll();
+        showToast({ message: '预览已更新', type: 'success', duration: 2500 });
+    });
     selectors.printBtn.addEventListener('click', () => {
         updateAll();
-        window.print();
+        showToast({ message: '正在准备打印...', type: 'info', duration: 2500 });
+        setTimeout(() => window.print(), 100); // 延迟一点以确保toast可见
     });
 
+    // ... (resetUI, populateForm, loadTemplateCSS, removeTemplateCSS, formatDate 函数保持不变) ...
     // 8. 辅助函数
     function resetUI(isTemplateLoading = false) {
         state.currentDocument = null;
@@ -222,14 +244,9 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentTemplate = null;
             state.config = null;
             selectors.previewContainer.innerHTML = '<div class="placeholder-text">请先选择一个模板和证件类型</div>';
-            
-            // --- 修改点：隐藏主内容区，替代原来分别隐藏各个部分 ---
             selectors.mainContentArea.classList.add('hidden');
-
-            // 清空通用表单
             document.querySelectorAll('#common-info-section input, #common-student-section input').forEach(input => {
                 if (input.type === 'file') {
-                    // 创建一个新的文件输入框来重置
                     const newInput = input.cloneNode(true);
                     input.parentNode.replaceChild(newInput, input);
                 } else {
@@ -239,8 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
             removeTemplateCSS();
         }
     }
-
-    // 新增：通用表单填充函数
     function populateForm(container, data) {
         if (!data) return;
         for (const [key, value] of Object.entries(data)) {
@@ -250,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
     function loadTemplateCSS(templateId) {
         removeTemplateCSS();
         const link = document.createElement('link');
@@ -259,11 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
         link.href = `/templates/${templateId}/style.css`;
         document.head.appendChild(link);
     }
-
     function removeTemplateCSS() {
         document.getElementById('template-styles')?.remove();
     }
-    
     function formatDate(date) {
         if (!date) return '';
         const d = (date instanceof Date) ? date : new Date(String(date).replace(/-/g, '/'));

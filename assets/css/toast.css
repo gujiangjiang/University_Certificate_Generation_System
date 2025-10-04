@@ -1,0 +1,98 @@
+/* 全局Toast弹窗样式 */
+#toast-container {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 350px;
+    width: 90%;
+}
+
+.toast {
+    background-color: #fff;
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border-left: 5px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    opacity: 0; /* 初始状态透明 */
+    transform: translateX(100%); /* 初始状态在屏幕外 */
+}
+
+.toast p {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+/* 不同类型的Toast样式 */
+.toast-info {
+    border-color: #007bff;
+}
+
+.toast-success {
+    border-color: #28a745;
+}
+
+.toast-warning {
+    border-color: #dc3545;
+}
+
+.toast-warning p strong {
+    color: #842029;
+}
+
+
+/* 关闭按钮样式 */
+.toast-close-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #999;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.toast-close-btn:hover {
+    color: #333;
+}
+
+/* Toast动画 */
+@keyframes toast-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toast-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.toast-fade-in {
+    animation: toast-slide-in 0.5s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.toast-fade-out {
+    animation: toast-fade-out 0.5s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+}
