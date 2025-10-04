@@ -23,21 +23,20 @@
     pointer-events: none;
 }
 
-/* --- 核心修改：为在读证明(短文档)专门启用Flexbox布局 --- */
 .enrollment-certificate.certificate {
-    height: 297mm; /* 强制撑满A4高度 */
+    height: 297mm;
     display: flex;
     flex-direction: column;
 }
 .enrollment-certificate .certificate-body {
-    flex-grow: 1; /* 让正文区自动伸展，填充所有空白 */
+    flex-grow: 1;
 }
 .enrollment-certificate .seal-section {
-    flex-shrink: 0; /* 防止签名区被压缩 */
+    flex-shrink: 0;
 }
 
 
-/* --- 录取通知书 & 在读证明 通用样式微调 --- */
+/* 录取通知书 & 在读证明 通用样式 */
 .letter-header, .certificate-header {
     text-align: center;
     margin-bottom: 20px;
@@ -103,7 +102,7 @@
 .signature-section {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px; /* 为录取通知书设置合适的间距 */
+    margin-top: 40px;
 }
 .signature-block {
     text-align: center;
@@ -119,7 +118,7 @@
     color: #666;
 }
 
-/* 录取通知书专属样式 (保持不变) */
+/* 录取通知书专属样式 */
 .admission-letter .letter-body {
     margin: 25px 0;
     text-align: justify;
@@ -162,7 +161,7 @@
 }
 .seal-section {
     position: relative;
-    margin-top: 40px; /* 恢复一个标准的间距，flex布局会处理底部对齐 */
+    margin-top: 40px;
 }
 .official-seal {
     position: absolute;
@@ -186,7 +185,7 @@
 }
 
 
-/* --- 学生证样式 (保持完美) --- */
+/* --- 学生证样式 --- */
 .student-card {
     width: 500px;
     height: 320px;
@@ -242,10 +241,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-.logo-container .placeholder-svg {
-    width: 50px;
-    height: 50px;
 }
 .header-text {
     flex: 1;
@@ -431,14 +426,11 @@
     width: 500px;
 }
 
-/* --- 打印样式修正 (最终布局优化版) --- */
+/* --- 打印样式修正 --- */
 @media print {
-    /* 隐藏预览时的标题，打印时不需要 */
     #preview-container > .preview-title {
         display: none !important;
     }
-
-    /* 学生证通用打印样式：尺寸、阴影、圆角等 */
     #preview-container > .student-card {
         width: 500px !important;
         height: 320px !important;
@@ -449,22 +441,63 @@
         border-radius: 16px !important;
         overflow: hidden !important;
     }
-    
-    /* 正面卡片定位 */
     #preview-container > .card-front {
         margin-top: 40mm !important;
         margin-bottom: 30mm !important;
     }
-
-    /* 背面卡片定位 */
     #preview-container > .card-back {
         margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
-
-    /* 确保卡片背景色能被打印 */
     .student-card, .card-front .header, .card-body, .card-back .black-bar {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+}
+
+/* --- 响应式布局 (针对小屏幕设备) --- */
+@media (max-width: 992px) {
+    .certificate, .student-card, .preview-title {
+        transform-origin: top center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* --- 平板视图 (577px - 992px) --- */
+    .certificate {
+        transform: scale(0.9);
+        margin-bottom: calc(297mm * (1 - 0.9) * -1); /* 补偿缩放产生的空白 */
+    }
+    .student-card, .preview-title {
+        transform: scale(0.9);
+    }
+    .preview-title {
+        margin-bottom: 10px; /* 保持一个正的间距，防止重叠 */
+    }
+    .student-card {
+         /* 补偿缩放产生的空白，同时保持20px的视觉间距 */
+        margin-bottom: calc(320px * (1 - 0.9) * -1 + 20px);
+    }
+    /* 确保最后一个元素没有负边距，避免影响后续内容 */
+    .card-back {
+        margin-bottom: 20px;
+    }
+
+    /* --- 手机视图 (<= 576px) --- */
+    @media (max-width: 576px) {
+        .certificate {
+            transform: scale(0.45);
+            margin-bottom: calc(297mm * (1 - 0.45) * -1);
+        }
+        .student-card, .preview-title {
+            transform: scale(0.7);
+        }
+        .student-card {
+            /* 用同样的逻辑计算更小尺寸下的边距 */
+            margin-bottom: calc(320px * (1 - 0.7) * -1 + 20px);
+        }
+         .card-back {
+            margin-bottom: 20px;
+        }
     }
 }

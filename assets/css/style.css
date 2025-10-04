@@ -251,3 +251,28 @@ button {
         border-radius: 0 !important;
     }
 }
+
+/* --- 新增：响应式布局 (针对小屏幕设备) --- */
+@media (max-width: 992px) { /* 在更宽的平板尺寸就开始响应 */
+    body {
+        padding: 10px; /* 减小页面内边距 */
+    }
+
+    .container {
+        flex-direction: column; /* 将主容器变为垂直布局 */
+        gap: 20px;
+    }
+
+    .control-panel {
+        flex: 1 0 auto; /* 控制面板宽度自适应 */
+        width: 100%;
+        max-height: none; /* 移除最大高度限制 */
+        overflow-y: visible;
+    }
+
+    .preview-area {
+        width: 100%;
+        min-height: 500px; /* 保证预览区有足够高度 */
+        overflow-x: hidden; /* 防止缩放后依然有横向滚动条 */
+    }
+}
