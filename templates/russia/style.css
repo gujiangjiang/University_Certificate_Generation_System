@@ -2,39 +2,51 @@
  * 仅适用于俄罗斯模板的样式
  */
 
-/* 通用证书样式 */
+/* 证书通用样式 */
 .certificate {
     width: 210mm;
-    min-height: 297mm;
     background-color: white;
-    padding: 40mm 30mm;
+    padding: 25mm 20mm;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     position: relative;
     font-family: 'Times New Roman', serif;
+    box-sizing: border-box;
 }
 
 .certificate-border {
     position: absolute;
-    top: 20mm;
-    left: 20mm;
-    right: 20mm;
-    bottom: 20mm;
+    top: 15mm;
+    left: 15mm;
+    right: 15mm;
+    bottom: 15mm;
     border: 3px double #2c5aa0;
     pointer-events: none;
 }
 
-/* --- 录取通知书 & 在读证明 样式复刻 --- */
+/* --- 核心修改：为在读证明(短文档)专门启用Flexbox布局 --- */
+.enrollment-certificate.certificate {
+    height: 297mm; /* 强制撑满A4高度 */
+    display: flex;
+    flex-direction: column;
+}
+.enrollment-certificate .certificate-body {
+    flex-grow: 1; /* 让正文区自动伸展，填充所有空白 */
+}
+.enrollment-certificate .seal-section {
+    flex-shrink: 0; /* 防止签名区被压缩 */
+}
 
-/* 通用头部样式 */
+
+/* --- 录取通知书 & 在读证明 通用样式微调 --- */
 .letter-header, .certificate-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 .university-logo-placeholder {
     width: 80px;
     height: 80px;
-    margin: 0 auto 20px;
-    background-color: #2c5aa0; /* 修正logo背景色 */
+    margin: 0 auto 15px;
+    background-color: #2c5aa0;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -57,31 +69,31 @@
 .university-name-en-display {
     font-size: 18px;
     color: #495057;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 .document-title {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     color: #2c5aa0;
-    margin: 30px 0;
+    margin: 20px 0;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 3px;
 }
 .student-info {
     background-color: #f8f9fa;
-    padding: 20px;
-    margin: 30px 0;
+    padding: 15px;
+    margin: 20px 0;
     border-left: 5px solid #2c5aa0;
 }
 .info-row {
     display: flex;
-    margin-bottom: 10px;
-    font-size: 16px;
+    margin-bottom: 8px;
+    font-size: 15px;
 }
 .info-label {
     font-weight: bold;
-    width: 200px;
+    width: 180px;
     color: #495057;
 }
 .info-value {
@@ -91,7 +103,7 @@
 .signature-section {
     display: flex;
     justify-content: space-between;
-    margin-top: 80px;
+    margin-top: 40px; /* 为录取通知书设置合适的间距 */
 }
 .signature-block {
     text-align: center;
@@ -100,57 +112,57 @@
 .signature-line {
     border-bottom: 2px solid #333;
     margin-bottom: 10px;
-    height: 40px;
+    height: 30px;
 }
 .signature-title {
     font-size: 14px;
     color: #666;
 }
 
-/* 录取通知书专属样式 */
+/* 录取通知书专属样式 (保持不变) */
 .admission-letter .letter-body {
-    margin: 40px 0;
+    margin: 25px 0;
     text-align: justify;
-    line-height: 1.8; /* 复刻行高 */
+    line-height: 1.7;
     font-size: 16px;
     color: #333;
 }
 .admission-letter .letter-body p {
-    margin-bottom: 20px;
-    text-indent: 2em; /* 复刻段首缩进 */
+    margin-bottom: 15px;
+    text-indent: 2em;
 }
 
 /* 在读证明专属样式 */
 .enrollment-certificate .certificate-header {
-    margin-bottom: 50px;
-    padding-bottom: 30px;
-    border-bottom: 2px solid #e9ecef; /* 复刻头部底边框 */
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
 }
 .enrollment-certificate .certificate-number {
     text-align: right;
     font-size: 14px;
     color: #6c757d;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 .enrollment-certificate .certificate-body {
-    margin: 40px 0;
+    margin: 25px 0;
     font-size: 16px;
-    line-height: 2.2; /* 复刻超大行高 */
+    line-height: 1.8;
     color: #333;
     text-align: justify;
 }
 .enrollment-certificate .certificate-body p {
-    margin-bottom: 20px; /* 增加段落间距 */
+    margin-bottom: 15px;
 }
 .highlight {
     font-weight: bold;
     color: #2c5aa0;
-    font-size: 18px;
-    padding: 0 5px;
+    font-size: 17px;
+    padding: 0 4px;
 }
 .seal-section {
     position: relative;
-    margin-top: 100px;
+    margin-top: 40px; /* 恢复一个标准的间距，flex布局会处理底部对齐 */
 }
 .official-seal {
     position: absolute;
@@ -174,7 +186,7 @@
 }
 
 
-/* --- 学生证样式 (最终精确修正版本) --- */
+/* --- 学生证样式 (保持完美) --- */
 .student-card {
     width: 500px;
     height: 320px;
@@ -219,9 +231,9 @@
     position: relative;
 }
 .logo-container img {
-    width: 100%; /* 修改：让图片宽度填满圆形容器 */
-    height: 100%; /* 修改：让图片高度填满圆形容器 */
-    object-fit: cover; /* 修改：使用cover模式裁剪图片以填充，确保不变形 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .logo-container .placeholder {
     width: 100%;
@@ -379,7 +391,7 @@
     font-family: 'Brush Script MT', cursive;
     color: #333;
     margin-bottom: 3px;
-    line-height: 1.1; /* 核心修复：为签名设置与正面一致的行高 */
+    line-height: 1.1;
 }
 .signature-label {
     font-size: 10px;
@@ -389,13 +401,13 @@
     width: 60px;
     height: 60px;
     position: relative;
-    border-radius: 50%; /* 新增：将容器设置为圆形 */
-    overflow: hidden; /* 新增：隐藏超出圆形容器的内容 */
+    border-radius: 50%;
+    overflow: hidden;
 }
 .back-logo img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 修改：使用cover模式裁剪图片以填充，确保不变形 */
+    object-fit: cover;
 }
 .back-logo .placeholder {
     width: 100%;
@@ -437,16 +449,14 @@
         border-radius: 16px !important;
         overflow: hidden !important;
     }
-
-    /* --- 核心修改：分别为正反面设置不同的外边距以调整打印位置 --- */
     
     /* 正面卡片定位 */
     #preview-container > .card-front {
-        margin-top: 40mm !important; /* 距顶端40毫米 */
-        margin-bottom: 30mm !important; /* 与背面卡片相距30毫米 */
+        margin-top: 40mm !important;
+        margin-bottom: 30mm !important;
     }
 
-    /* 背面卡片定位（重置边距，它会紧跟在正面下方） */
+    /* 背面卡片定位 */
     #preview-container > .card-back {
         margin-top: 0 !important;
         margin-bottom: 0 !important;
