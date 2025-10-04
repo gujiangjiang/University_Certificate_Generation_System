@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. 初始化
     async function initialize() {
         try {
-            const response = await fetch('templates/manifest.json');
+            // 路径已修改为根相对路径
+            const response = await fetch('/templates/manifest.json');
             if (!response.ok) throw new Error('无法加载模板清单 manifest.json');
             const manifest = await response.json();
             
@@ -45,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resetUI(true);
 
         try {
-            const response = await fetch(`templates/${templateId}/config.json`);
+            // 路径已修改为根相对路径
+            const response = await fetch(`/templates/${templateId}/config.json`);
             if (!response.ok) throw new Error('无法加载 config.json');
             state.config = await response.json(); // 保存配置
 
@@ -96,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            const response = await fetch(`templates/${state.currentTemplate}/${docId}.html`);
+            // 路径已修改为根相对路径
+            const response = await fetch(`/templates/${state.currentTemplate}/${docId}.html`);
             if (!response.ok) throw new Error(`无法加载 ${docId}.html`);
             const htmlContent = await response.text();
             
@@ -114,7 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bindDocumentFormEvents();
             updateAll();
 
-        } catch (error) {
+        // --- 修复点：恢复了 try...catch 语句块的完整性 ---
+        } catch (error) { 
             console.error(`加载文档 ${docId} 失败:`, error);
             selectors.previewContainer.innerHTML = `<div class="placeholder-text">错误：加载文档失败。<br><pre>${error.stack}</pre></div>`;
         }
@@ -261,7 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = document.createElement('link');
         link.id = 'template-styles';
         link.rel = 'stylesheet';
-        link.href = `templates/${templateId}/style.css`;
+        // 路径已修改为根相对路径
+        link.href = `/templates/${templateId}/style.css`;
         document.head.appendChild(link);
     }
 

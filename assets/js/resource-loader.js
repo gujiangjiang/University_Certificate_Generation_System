@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const resources = [
         {
             // Noto Sans SC 字体
-            local: 'assets/libs/google-fonts/noto-sans-sc.css',
+            // 修改点：路径前添加 "/"
+            local: '/assets/libs/google-fonts/noto-sans-sc.css',
             online: 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap'
         }
         // 未来可以添加更多需要本地回退的CSS资源
